@@ -1,0 +1,66 @@
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+
+<html>
+    <head>
+        <title> Written Work and Projects </title>
+    </head>
+
+    <body>
+            <nav class="navbar navbar-inverse">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Written Work and Projects</a>
+    </div>
+  </div>
+</nav>
+
+<h2>
+Below you can find past projects of mine. For now only as .pdf
+</h2>
+
+<div class="container">
+      <div>
+        <h1>PROJECTS:</h1>
+        <ul>
+          {% for result in results %}
+            <li>{{result.name}} - <b>{{result.description}}</b>
+            <a href="{{url_for('showwork', idd = result.id)}}"> Download pdf </a>
+            <form action="{{url_for('deletework', idd = result.id)}}" method="POST">
+            <input type="submit" value="Delete">
+            </form>
+            </li>
+
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+</div><!-- /.container -->
+
+
+<div class="container">
+
+
+        <div class=row>
+            <form action="{{url_for('work')}}" method="POST" enctype=multipart/form-data>
+                <textarea name="name" placeholder="Title" class="form-control"></textarea>
+                <textarea name ="descr" placeholder = "Description" class="form-control"></textarea>
+                <input type=file name=file>
+                <input type="submit" value="Add new Project">
+            </form>
+        </div>
+
+</div><!-- /.container -->
+    </body>
+</html>
+

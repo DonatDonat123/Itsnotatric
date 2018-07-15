@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Using the event properties</title>
+        <style>
+        .beard {
+              	background: black;
+         		width: 5px;
+         		height: 5px;
+         		position: absolute;
+         		border-radius: 2px;
+         		top: 80px;
+         		left: 15px;
+         	}
+        </style>
+    </head>
+    <body>
+
+    <img id="face" src="https://www.kasandbox.org/programming-images/creatures/Winston.png">
+    <div id="message"></div>
+
+
+    <h1>Mad Libs</h1>
+
+    <ul>
+      <li>Noun: <input type="text" id="noun"></li>
+      <li>Adjective: <input type="text" id="adjective"></li>
+      <li>Someone's Name: <input type="text" id="person"></li>
+    </ul>
+
+    <button id="lib-button">Lib it!</button>
+
+    <p>Generated story:
+    <span id="story"></span>
+    </p>
+
+    <script>
+        // for the word game
+        var libButton = document.getElementById('lib-button');
+        var libIt = function() {
+            var noun = document.getElementById('noun').value
+            var adj = document.getElementById('adjective').value
+            var name = document.getElementById('person').value
+            var storyDiv = document.getElementById("story");
+            storyDiv.innerHTML = "One day, a big and " + adj + ' ' + noun + ' came to me and said his name is ' + name;
+        };
+        libButton.addEventListener('click', libIt);
+
+    // 1. Find and store the element we want to listen to events on.
+    var face = document.getElementById("face");
+    // 2. Define the function that will respond to the event.
+    var onMouseMove = function(event) {
+        console.log(event);
+        document.getElementById("message").textContent += "px drawn ";         var beard = document.createElement("div");
+        beard.className = "beard";
+        document.body.appendChild(beard);
+        beard.style.top = event.clientY + "px";
+        beard.style.left = event.clientX + "px";
+
+    };
+    // 3. Add the event listener for the element and function
+    face.addEventListener("click", onMouseMove);
+    </script>
+    </body>
+</html>

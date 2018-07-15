@@ -1,0 +1,57 @@
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+
+<html>
+    <head>
+        <title> Car Dealers around Carnovo </title>
+    </head>
+
+    <body>
+            <nav class="navbar navbar-inverse">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">My scratchpad</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+      <div>
+        <h1>Colors:</h1>
+        <ul>
+          {% for result in results %}
+            <li>{{ result[0] }} - <b>{{ result[1] }}</b></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+
+<div class="container">
+
+        <div class=row>
+            <form action="." method="POST">
+                <textarea name="color" placeholder="Enter Color" value="blue" class="form-control"></textarea>
+                <textarea name ="emotion" placeholder = "Enter Emotion" value="sad" class="form-control"></textarea>
+                <textarea name ="humm" placeholder = "Humming" value="neutral" class="form-control"></textarea>
+                <textarea name="name" placeholder="username" value="dennis" class="form-control"></textarea>
+                <textarea name ="reactiontime" placeholder = "reactiontime" value=0.001 class="form-control"></textarea>
+                <textarea name="age" placeholder="age" value="24" class="form-control"></textarea>
+                <textarea name ="gender" placeholder = "gender" value="m" class="form-control"></textarea>
+                <input type="submit" value="Post comment">
+            </form>
+        </div>
+
+</div><!-- /.container -->
+    </body>
+</html>
+

@@ -1,0 +1,58 @@
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+
+<html>
+    <head>
+        <title> Car Dealers around Carnovo </title>
+    </head>
+
+    <body>
+            <nav class="navbar navbar-inverse">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Car Dealers around Carnovo</a>
+    </div>
+  </div>
+</nav>
+
+<h2>
+This page is the result of a task that was part of an interviewing-process with the startup company Carnovo. <br>
+They asked me to connect to the Google Maps API and search for 100 car-dealers around their office and then save their name + postal code to a database.
+I thought, it's obviously much cooler to also show the results, so below they are.
+</h2>
+
+<div class="container">
+      <div>
+        <h1>DEALERS:</h1>
+        <ul>
+          {% for result in results %}
+            <li>{{result.name}} - <b>{{result.pcode}}</b></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+
+<div class="container">
+
+        <div class=row>
+            <form action="{{url_for('cardealers')}}" method="POST">
+                <textarea name="name" placeholder="Dealer Name" class="form-control"></textarea>
+                <textarea name ="pcode" placeholder = "Postal Code" class="form-control"></textarea>
+                <input type="submit" value="Add new Dealer">
+            </form>
+        </div>
+
+</div><!-- /.container -->
+    </body>
+</html>
+
