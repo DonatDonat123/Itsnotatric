@@ -1,5 +1,6 @@
 import os
 import datetime
+import mysql
 from flask import Flask, redirect, render_template, request, url_for, send_from_directory
 from flask_socketio import SocketIO, send
 from flask_sqlalchemy import SQLAlchemy
