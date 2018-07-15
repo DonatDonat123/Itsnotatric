@@ -4,17 +4,15 @@ import mysql
 from flask import Flask, redirect, render_template, request, url_for, send_from_directory
 from flask_socketio import SocketIO, send
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Integer, Float, Column, ForeignKey, String
+from sqlalchemy import String, Boolean
 from werkzeug.utils import secure_filename
 from config import DB_URI, UP_FOLDER
+from nlp import NLP
+
 #from db_setup import Dealers, Recipe, Project
 
 UPLOAD_FOLDER = UP_FOLDER
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
-
-from nlp import NLP
-nlp = NLP()
-print ('NLP Object Created \n <br>')
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -25,7 +23,7 @@ app = Flask(__name__, static_folder = 'fotos')
 SQLALCHEMY_DATABASE_URI = DB_URI
 
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
-app.config["SQLALCHEMY_POOL_RECYCLE"] = 300
+#app.config["SQLALCHEMY_POOL_RECYCLE"] = 3000
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -57,6 +55,16 @@ class Chat(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user = db.Column(String(128)) #bot or user
     message = db.Column(String(1028))
+    city1 = db.Column(String(24))
+    city2 = db.Column(String(24))
+    origin = db.Column(String(24))
+    blindshot = db.Column(Boolean)
+    docity1 = db.Column(Boolean)
+    docity12 = db.Column(Boolean)
+    askorigin = db.Column(Boolean)
+    bydistance = db.Column(Boolean)
+    askdist = db.Column(Boolean)
+
 #    last_updated = db.Column(DateTime, onupdate=datetime.datetime.now)
 # RUN OUTSIDE OF THE SCRIPT:
 #from db_setup import db
@@ -66,20 +74,32 @@ class Chat(db.Model):
 def index():
     return render_template('index.html')
 
+@app.route("/chatbotInit", methods=["GET"])
+def chatbotInit():
+    entry1 = Chat(user = 'init', message = 'hello', city1=None, city2=None, origin=None, blindshot=False, docity1=False, docity12=False\
+        ,askorigin=False, bydistance=False, askdist=False)
+    db.session.add(entry1)
+    db.session.commit()
+    db.session.close()
+    return redirect(url_for('chatbot'))
+
 @app.route("/chatbot", methods=["GET", "POST"])
 def chatbot():
     if request.method == "POST":
         print ('THEY POSTED !!!')
         user = 'user' # change with login later
-        message = unicode(request.form["message"])
-        entry1 = Chat(user=user, message=message)
-        response = nlp.respond(message)
-        entry2 = Chat(user = 'bot', message = response)
+        message = str(request.form["message"])
+        cfg = Chat.query.order_by(Chat.id.desc()).limit(1).one()
+        nlp = NLP(cfg.city1, cfg.city2, cfg.origin, cfg.blindshot, cfg.docity1, cfg.docity12, cfg.askorigin, cfg.bydistance, cfg.askdist)
+        response, city1, city2, origin, blindshot, docity1, docity12, askorigin, bydistance, askdist = nlp.respond(message)
+        entry1 = Chat(user = user, message = message, city1=city1, city2=city2, origin=origin, blindshot=blindshot, docity1=docity1, docity12=docity12\
+        ,askorigin=askorigin, bydistance=bydistance, askdist=askdist)
+        entry2 = Chat(user = 'bot', message = response, city1=city1, city2=city2, origin=origin, blindshot=blindshot, docity1=docity1, docity12=docity12\
+                 ,askorigin=askorigin, bydistance=bydistance, askdist=askdist)
         db.session.add(entry1)
         db.session.add(entry2)
         db.session.commit()
         db.session.close()
-        print ('T')
         #return render_template("carnovo.html", results=Dealers.query.all())
         return redirect(url_for('chatbot'))
     else:

@@ -6,8 +6,6 @@ import pyowm
 from pyowm import timeutils
 # Import for DistanceMatrix
 from datetime import datetime
-import time
-import json
 import googlemaps
 key = 'AIzaSyDhjoU4gFGIJ5VTTaexR_4_tDoaMvbgCaA'
 client = googlemaps.Client(key)
@@ -16,7 +14,6 @@ owm = pyowm.OWM('08d83af8b06526025140d9752d6fb9b3')  # You MUST provide a valid 
 
 os.environ['NLTK_DATA'] = os.getcwd() + '/nltk_data'
 
-from textblob import TextBlob
 from config import FILTER_WORDS
 # Set up spaCy
 #from spacy.lang.en import English
@@ -29,17 +26,17 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
 class NLP:
-	def __init__(self):
+	def __init__(self, city1, city2, origin, blindshot, docity1, docity12, askorigin, bydistance, askdist):
 		print("NLP class was created")
-		self.city1 = None
-		self.city2 = None
-		self.blindshot = False
-		self.docity1 = False
-		self.docity12 = False
-		self.askorigin = None
-		self.bydistance = False  # by default we take weather as important parameter
-		self.askdist = False
-		self.origin = None
+		self.city1 = city1
+		self.city2 = city2
+		self.origin = origin
+		self.blindshot = blindshot
+		self.docity1 = docity1
+		self.docity12 = docity12
+		self.askorigin = askorigin
+		self.bydistance = bydistance  # by default we take weather as important parameter
+		self.askdist = askdist
 
 	def random_answer(self):
 		GENERAL_RESPONSES = ("We will see", "Ok, but that's not really true", "You wanna think about it again ?",
@@ -192,7 +189,7 @@ class NLP:
 		# Will it be sunny tomorrow at this time in Milan (Italy) ?
 		if (bydistance):
 			now = datetime.now()
-			print (city1)
+			print ('origin: {}, city1: {} city2: {}'.format(self.origin, self.city1, self.city2))
 			duration_now1 = client.distance_matrix(origin, city1, mode="driving")
 			#, language="en-AU", units="imperial", departure_time=now, traffic_model="optimistic")
 			duration_now2 = client.distance_matrix(origin, city2, mode="driving", language="en-AU", units="imperial",
@@ -204,7 +201,6 @@ class NLP:
 			zeit2 = duration_now2['rows'][0]['elements'][0]['duration']['text']
 			resp = "It takes {zeit1} to {city1}, and {zeit2} to {city2}".format(
 				**{'zeit1': zeit1, 'zeit2': zeit2, 'city1': city1, 'city2': city2})
-			print (resp)
 		else:
 			fc1 = owm.daily_forecast(city1)
 			fc2 = owm.daily_forecast(city2)
@@ -222,20 +218,18 @@ class NLP:
 				else:
 					temp_max = temp2;
 					city_max = city2
-				resp = "Well, it's gonna be sunny in both places, but it will be warmer in {city} ({temp}C) !".format(
-					**{'city': city_max, 'temp': temp_max})
-				return resp
+				resp = "Well, it's gonna be sunny in both places, but it will be warmer in {} ({}C) !".format(city_max, temp_max)
 			elif sunny1 and not sunny2:
 				city_sun = city1
 			elif sunny2 and not sunny1:
 				city_sun = city2
-			if temp1 > temp2:
-				city_max = city1
-			else:
-				city_max = city2
-			resp = "Hmm, difficult choice: In {city_sun} it will be sunny and in {city_max} it will be warmer, you decide".format(
-				**{'city_sun': city_sun, 'city_max': city_max})
-			if not resp: resp = "Better stay at home, it's going to be rainy anyways in both places"
+			if city_sun:
+				if temp1 > temp2:
+					city_max = city1
+				else:
+					city_max = city2
+				resp = "Hmm, difficult choice: In {} it will be sunny and in {} it will be warmer, you decide ...".format(city_sun, city_max)
+			else: resp = "Better stay at home, it's going to be rainy anyways in both places"
 		self.city1 = None
 		self.city2 = None
 		self.directions = True
@@ -248,8 +242,7 @@ class NLP:
 		weather = fc.get_weather_at(tomorrow)
 		temp = weather.get_temperature(unit='celsius')["day"]
 		status = weather.get_status()
-		resp = "in {city} it will be {status} tomorrow and {temp} degree.".format(
-			**{'city': city1, 'status': status, 'temp': temp})
+		resp = "in {} it will be {} tomorrow and {} degree.".format(city1, status, temp)
 		if sunny: resp += " At least you can catch some sun, right ?"
 		self.city1 = None
 		return resp
@@ -264,8 +257,7 @@ class NLP:
 		weather = fc.get_weather_at(tomorrow)
 		temp = weather.get_temperature(unit='celsius')["day"]
 		status = weather.get_status()
-		resp = "Why don't you try {city}. It will be {status} tomorrow and {temp} degree. Vamos :) ".format(
-			**{'city': city, 'status': status, 'temp': temp})
+		resp = "Why don't you try {city}. It will be {} tomorrow and {} degree. Vamos :) ".format(city, status, temp)
 		self.blindshot = None
 		return resp
 
@@ -274,6 +266,8 @@ class NLP:
 then I'm your man...amm bot. I can help you to decide between 2 cities, give you more information about 1 city or even \
 give you my personal suggestion of the day if you don't have any plan. But first things first: What's your origin ?"
 		self.askorigin = True
+		print ('set askorigin to true, right ? ')
+		print (self.askorigin)
 		return resp
 
 	def set_origin(self, sent):
@@ -301,8 +295,10 @@ give you my personal suggestion of the day if you don't have any plan. But first
 		print(self.askorigin)
 		print("askdist = ");
 		print(self.askdist)
-		print('askdocity12');
+		print('docity12');
 		print(self.docity12)
+		print('docity1');
+		print(self.docity1)
 		if self.askorigin:
 			resp = self.set_origin(parsed)
 		elif self.askdist:
@@ -312,10 +308,8 @@ give you my personal suggestion of the day if you don't have any plan. But first
 				self.bydistance = False; self.askdist = False
 			else:
 				resp = "I didn't get that. Again: By weather or distance ?"
-		print("resp_before_12 = ");
-		print(resp)
 		if any(phrase in s for s in ("start", "\start")):
-			resp = self.introduction(); print("Intro2"); print(resp)
+			resp = self.introduction(); print("Intro2");
 		elif self.docity12 and not resp:
 			print("DOCTIY12")
 			resp = self.give2cities(self.city1, self.city2, self.bydistance, self.origin)
@@ -329,6 +323,8 @@ give you my personal suggestion of the day if you don't have any plan. But first
 			resp = self.check_for_greeting(parsed)
 		if not resp:
 			(self.city1, self.city2, self.blindshot) = self.check_for_geo_keywords(parsed)
+			print ('Checked for GeoKeywords, city1, city2, blindshot:')
+			print (self.city1, self.city2, self.blindshot)
 			if (self.city1 and self.city2):
 				resp = self.ask2cities(self.city1, self.city2)
 			elif self.city1:
@@ -350,7 +346,8 @@ give you my personal suggestion of the day if you don't have any plan. But first
 				return " ".join(resp)
 		if not resp:
 			resp = self.random_answer()
-		return resp
+		print ('resp = {}'.format(resp))
+		return resp, self.city1, self.city2, self.origin, self.blindshot, self.docity1, self.docity12, self.askorigin, self.bydistance, self.askdist
 
 	def find_candidate_parts_of_speech(self, parsed):
 		# Given a parsed input, find the best pronoun, direct noun, adjective, and verb to match their input.
