@@ -83,6 +83,7 @@ def chatbot():
         db.session.add(entry2)
         db.session.commit()
         db.session.close()
+        print ('TEST')
         #return render_template("carnovo.html", results=Dealers.query.all())
         return redirect(url_for('chatbot'))
     else:
