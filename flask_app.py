@@ -6,9 +6,10 @@ from flask_socketio import SocketIO, send
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, Float, Column, ForeignKey, String
 from werkzeug.utils import secure_filename
+from config import DB_URI, UP_FOLDER
 #from db_setup import Dealers, Recipe, Project
 
-UPLOAD_FOLDER = '/home/DennisDemenis/WebPage/fotos'
+UPLOAD_FOLDER = UP_FOLDER
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 from nlp import NLP
@@ -21,20 +22,14 @@ def allowed_file(filename):
 
 app = Flask(__name__, static_folder = 'fotos')
 
-SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
-    username="DennisDemenis",
-    password="advanced",
-    hostname="DennisDemenis.mysql.pythonanywhere-services.com",
-    databasename="DennisDemenis$cardealers",
-)
+SQLALCHEMY_DATABASE_URI = DB_URI
+
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 app.config["SQLALCHEMY_POOL_RECYCLE"] = 300
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['SECRET_KEY'] = 'mysecret'
 
 socketio = SocketIO(app)
-
 db = SQLAlchemy(app)
 
 class Dealers(db.Model):
@@ -76,7 +71,7 @@ def chatbot():
     if request.method == "POST":
         print ('THEY POSTED !!!')
         user = 'user' # change with login later
-        message = str(request.form["message"])
+        message = unicode(request.form["message"])
         entry1 = Chat(user=user, message=message)
         response = nlp.respond(message)
         entry2 = Chat(user = 'bot', message = response)

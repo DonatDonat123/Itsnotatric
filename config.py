@@ -1,5 +1,6 @@
 TOKEN = "303470452:AAGorujy9KrzvNoFNZe3nVMlVY8swRxVAV8"
-
+UP_FOLDER = '/home/dd/Dropbox/Studium/webpage_python/Itsnotatric/fotos'
+DB_URI = 'sqlite:///myDB.db'
 
 
 FILTER_WORDS = set([
