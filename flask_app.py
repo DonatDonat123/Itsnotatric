@@ -1,6 +1,7 @@
 import os
 import datetime
 import mysql
+import simplejson as json
 from flask import Flask, redirect, render_template, request, url_for, send_from_directory
 from flask_socketio import SocketIO, send
 from flask_sqlalchemy import SQLAlchemy
@@ -65,14 +66,42 @@ class Chat(db.Model):
     bydistance = db.Column(Boolean)
     askdist = db.Column(Boolean)
 
+class UserChat(db.Model):
+    __tablename__ = "userchat"
+    id = db.Column(db.Integer, primary_key=True)
+    user = db.Column(String(128)) #bot or user
+    message = db.Column(String(1028))
+   
 #    last_updated = db.Column(DateTime, onupdate=datetime.datetime.now)
 # RUN OUTSIDE OF THE SCRIPT:
 #from db_setup import db
 #db.create_all()
 
 @app.route("/")
+
 def index():
     return render_template('index.html')
+
+def messageReceived(methods=['GET', 'POST']):
+    print('message was received!!!')
+
+@app.route("/userchat", methods=["GET", "POST"])
+def userchat():
+    if request.method == "POST":
+        message = str(request.form["message"])
+        entry = UserChat(message = message)
+        db.session.add(entry)
+        db.session.commit()
+        db.session.close()
+        return redirect(url_for('userchat'))
+    else:
+        return render_template("userchat.html", results=UserChat.query.all())
+
+@socketio.on('my event')
+def handle_my_custom_event(json, methods=['GET', 'POST']):
+    print('received my event: ' + str(json))
+    socketio.emit('my response', json, callback=messageReceived)
+
 
 @app.route("/chatbotInit", methods=["GET"])
 def chatbotInit():
