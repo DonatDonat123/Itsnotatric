@@ -13,7 +13,12 @@
          		top: 80px;
          		left: 15px;
          	}
+        .crocodile {
+                color: green;
+                font-family: fantasy;
+            }
         </style>
+
     </head>
     <body>
 
@@ -34,6 +39,23 @@
     <p>Generated story:
     <span id="story"></span>
     </p>
+
+    <h2 id="cuteness">Cats are cute</h2>
+
+    <p>Cats are widely known to be one of the cutest animals. It has long been rumored that they have put all of humanity under a hypnosis, so that they can achieve their goals of getting fed while also getting to do whatever they darn want around our houses.</p>
+
+    <p>This cat is exhibiting what's known as the "so-cute-now-feed-me" face:</p>
+    <a href="https://en.wikipedia.org/wiki/Cat_food">
+        <img class = "catpics" src="https://www.kasandbox.org/programming-images/animals/cat.png" width="200">
+    </a>
+
+    <h2 id="activities">Common cat activities (Cat-ivities)</h2>
+
+    <p>Cats enjoy attacking innocent pieces of string, walking around your legs at the exact moment that you're trying to flip a pancake on the stove, sleeping for hours and hours and hours, and pouncing on unsuspecting laser dots.</p>
+    <img class = "catpics" src="https://upload.wikimedia.org/wikipedia/commons/5/5c/2006-07-07_katze_mit_angel.jpg" width="200">
+
+    <a href="https://en.wikipedia.org/wiki/Cat">Learn more</a>
+
 
     <script>
         // for the word game
@@ -62,5 +84,42 @@
     // 3. Add the event listener for the element and function
     face.addEventListener("click", onMouseMove);
     </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script>
+        // Change DOM objects from the cats to crocodiles
+        $("h2").text("CROCODILE ATTACK!");
+        $("p").html("The crocodiles are coming - <strong>oh noess</strong>!!");
+        $("p").css("color", "green");
+        $("h2").addClass("crocodile");
+        $("a").attr("href", "https://en.wikipedia.org/wiki/Crocodile");
+        $(".catpics").attr("src", "https://www.kasandbox.org/programming-images/animals/crocodiles.png");
+
+        var newP = $("<p>");
+        newP.text("The crocodiles have eaten this ENTIRE PAGE!");
+        newP.addClass("crocodile");
+        // append prepend after
+        $("body").append(newP);
+    </script>
+
+    <script>
+        // Use Fro Loops to change various paragraphs
+        // Option 1: For Loops
+        var $paragraphs = $('p');
+        for (var i = 0; i < $paragraphs.length; i++) {
+            var element = $paragraphs[i]; // DOM node
+            var $paragraph = $(element);
+            $paragraph.html( $paragraph.html() + "..huzzah!");
+        }
+
+        // Option 2: Using each()
+        $paragraphs.each(function(index, element) {
+            var $paragraph = $(this);
+            console.log(element === this);
+            $paragraph.html( $paragraph.html() + "..wowee!");
+        });
+    </script>
+
+
     </body>
 </html>
