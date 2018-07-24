@@ -167,7 +167,7 @@ def recipes():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             #filename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            file.save(os.path.join(application.config['UPLOAD_FOLDER'], filename))
             #return redirect(url_for('uploaded_file',filename=filename))
             name = str(request.form["name"])
             descr = str(request.form["descr"])
@@ -208,7 +208,7 @@ def work():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             #filename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            file.save(os.path.join(application.config['UPLOAD_FOLDER'], filename))
             #return redirect(url_for('uploaded_file',filename=filename))
             name = str(request.form["name"])
             descr = str(request.form["descr"])
