@@ -19,7 +19,7 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-app = Flask(__name__, static_folder = 'fotos')
+application = Flask(__name__, static_folder = 'fotos')
 
 SQLALCHEMY_DATABASE_URI = DB_URI
 
@@ -242,6 +242,6 @@ def interactive():
     return render_template('interactive.html')
 
 if __name__ == '__main__':
-    app.debug = True
-    socketio.run(app)
+    application.debug = True
+    socketio.run(application)
     #app.run()
