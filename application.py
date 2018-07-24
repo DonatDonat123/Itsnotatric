@@ -26,7 +26,7 @@ SQLALCHEMY_DATABASE_URI = DB_URI
 application.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 #application.config["SQLALCHEMY_POOL_RECYCLE"] = 3000
 application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-applicatio.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+application.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 socketio = SocketIO(application)
 db = SQLAlchemy(application)
