@@ -23,13 +23,13 @@ application = Flask(__name__, static_folder = 'fotos')
 
 SQLALCHEMY_DATABASE_URI = DB_URI
 
-app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
-#app.config["SQLALCHEMY_POOL_RECYCLE"] = 3000
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+application.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
+#application.config["SQLALCHEMY_POOL_RECYCLE"] = 3000
+application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+applicatio.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-socketio = SocketIO(app)
-db = SQLAlchemy(app)
+socketio = SocketIO(application)
+db = SQLAlchemy(application)
 
 class Dealers(db.Model):
     __tablename__ = "dealers"
@@ -77,7 +77,7 @@ class UserChat(db.Model):
 #from db_setup import db
 #db.create_all()
 
-@app.route("/")
+@application.route("/")
 
 def index():
     return render_template('index.html')
@@ -85,7 +85,7 @@ def index():
 def messageReceived(methods=['GET', 'POST']):
     print('message was received!!!')
 
-@app.route("/userchat", methods=["GET", "POST"])
+@application.route("/userchat", methods=["GET", "POST"])
 def userchat():
     if request.method == "POST":
         message = str(request.form["message"])
@@ -103,7 +103,7 @@ def handle_my_custom_event(json, methods=['GET', 'POST']):
     socketio.emit('my response', json, callback=messageReceived)
 
 
-@app.route("/chatbotInit", methods=["GET"])
+@application.route("/chatbotInit", methods=["GET"])
 def chatbotInit():
     entry1 = Chat(user = 'init', message = 'hello', city1=None, city2=None, origin=None, blindshot=False, docity1=False, docity12=False\
         ,askorigin=False, bydistance=False, askdist=False)
@@ -112,7 +112,7 @@ def chatbotInit():
     db.session.close()
     return redirect(url_for('chatbot'))
 
-@app.route("/chatbot", methods=["GET", "POST"])
+@application.route("/chatbot", methods=["GET", "POST"])
 def chatbot():
     if request.method == "POST":
         print ('THEY POSTED !!!')
@@ -135,7 +135,7 @@ def chatbot():
         return render_template("chatbot.html", results=Chat.query.all())
 
 
-@app.route("/cardealers", methods=["GET", "POST"])
+@application.route("/cardealers", methods=["GET", "POST"])
 def cardealers():
     if request.method == "POST":
         print ('THEY POSTED !!!')
@@ -151,7 +151,7 @@ def cardealers():
         return render_template("carnovo.html", results=Dealers.query.all())
 
 
-@app.route('/recipes', methods=["GET", "POST"])
+@application.route('/recipes', methods=["GET", "POST"])
 def recipes():
     if request.method == "POST":
         # check if the post request has the file part
@@ -181,7 +181,7 @@ def recipes():
         #recipes = db.session.query(Recipe).all()
         return render_template('recipes2.html', results = Recipe.query.all())
 
-@app.route('/deleterecipe/<int:idd>', methods=["GET", "POST"])
+@application.route('/deleterecipe/<int:idd>', methods=["GET", "POST"])
 def deleterecipe(idd):
     itemToDelete = db.session.query(Recipe).filter_by(id=idd).one()
     if request.method == 'POST':
@@ -192,7 +192,7 @@ def deleterecipe(idd):
         return render_template('deleterecipe.html', name=itemToDelete.name)
 
 
-@app.route('/work', methods=["GET", "POST"])
+@application.route('/work', methods=["GET", "POST"])
 def work():
     if request.method == "POST":
         # check if the post request has the file part
@@ -222,12 +222,12 @@ def work():
         #recipes = db.session.query(Recipe).all()
         return render_template('work.html', results = Project.query.all())
 
-@app.route('/showwork/<int:idd>', methods=["GET"])
+@application.route('/showwork/<int:idd>', methods=["GET"])
 def showwork(idd):
     item = db.session.query(Project).filter_by(id=idd).one()
     return send_from_directory(UPLOAD_FOLDER, item.filename, as_attachment=True)
 
-@app.route('/deletework/<int:idd>', methods=["GET", "POST"])
+@application.route('/deletework/<int:idd>', methods=["GET", "POST"])
 def deletework(idd):
     itemToDelete = db.session.query(Project).filter_by(id=idd).one()
     if request.method == 'POST':
@@ -237,7 +237,7 @@ def deletework(idd):
     else:
         return render_template('deleterecipe.html', name=itemToDelete.name)
 
-@app.route('/interactive', methods=["GET", "POST"])
+@application.route('/interactive', methods=["GET", "POST"])
 def interactive():
     return render_template('interactive.html')
 
