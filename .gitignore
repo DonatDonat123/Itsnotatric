@@ -4,7 +4,6 @@ oldapp/
 static/
 fotos/
 py32/
-config.py
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
