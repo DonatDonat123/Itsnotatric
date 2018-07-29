@@ -1,6 +1,6 @@
 UP_FOLDER = './fotos'
 #DB_URI = 'sqlite:///myDB.db'
-DB_URI = 'mysql+pymysql://dennis:inmainma@dbtrick.ct5klwfzj701.us-east-2.rds.amazonaws.com'
+DB_URI = 'mysql+pymysql://dennis:inmainma@dbtrick.ct5klwfzj701.us-east-2.rds.amazonaws.com/dbtrick'
 #DB_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
 #    username="DennisDemenis",
 #    password="advanced",
