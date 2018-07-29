@@ -35,6 +35,7 @@
     <input type="text" class="username" placeholder="User Name"/>
     <input type="text" class="message" placeholder="Messages"/>
     <button id="sendbutton"> SEND </button>
+    <button id="roombutton" value="room1"> Join Room 1 </button>
   </form>
 
   </div><!-- /.container -->
@@ -53,17 +54,28 @@
       var message = $('.message').val()
       socket.emit('myevent', {
         username: username,
-        message: message
+        message: message,
+        room:room
       })
       $('.message').val('')
-      console.log(username)
-      console.log(message)
+      console.log("username: " + username)
+      console.log("message: " + message)
+      console.log("room: " + room)
+    })
+
+    var roombtn = $('#roombutton').on('click', function(e){
+      e.preventDefault()
+      var username = $('.username').val()
+      room = e.target.value // declare globally
+      socket.emit('join', {
+        username: username,
+        room: room
+      })
+      console.log("username: " + username)
+      console.log("room: " + room)
     })
 
     socket.on('message', function(msg){
-      console.log(msg.username)
-      console.log(msg.message)
-      console.log(typeof msg.username)
       if( typeof msg.username !== 'undefined' && msg.message!=='') {
         $( 'h3' ).remove()
         $( 'div.message_holder' ).append( '<div><b style="color: #000">'+msg.username+'</b> '+msg.message+'</div>' )

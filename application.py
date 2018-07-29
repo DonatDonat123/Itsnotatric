@@ -2,7 +2,9 @@ import os
 import datetime
 import mysql
 import simplejson as json
-from flask import Flask, redirect, render_template, request, url_for, send_from_directory
+from flask import Flask, redirect, render_template, request, url_for
+from flask import  send_from_directory, session
+from flask_socketio import join_room, leave_room
 from flask_socketio import SocketIO, send
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Boolean
@@ -89,13 +91,23 @@ def userchat():
 
 @socketio.on('message')
 def handleMessage(msg):
-    print(msg)
-    send(msg, broadcast=True)
+    print("message: " + msg)
+    send(msg, room=room)
 
 @socketio.on('myevent')
 def handleMyEvent(input):
     print('received my event: ' + str(input))
-    socketio.send(input)
+    room = input['room']
+    print ("room: " + room)
+    print (request.sid)
+    socketio.send(input, room=room)
+
+@socketio.on('join')
+def handleJoin(data):
+    username = data['username']
+    room = data['room']
+    join_room(room)
+    send(username + ' has entered the room.', room=room)
 
 @application.route("/chatbotInit", methods=["GET"])
 def chatbotInit():
