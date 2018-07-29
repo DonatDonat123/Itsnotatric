@@ -82,26 +82,20 @@ class UserChat(db.Model):
 def index():
     return render_template('index.html')
 
-def messageReceived(methods=['GET', 'POST']):
-    print('message was received!!!')
-
 @application.route("/userchat", methods=["GET", "POST"])
 def userchat():
-    if request.method == "POST":
-        message = str(request.form["message"])
-        entry = UserChat(message = message)
-        db.session.add(entry)
-        db.session.commit()
-        db.session.close()
-        return redirect(url_for('userchat'))
-    else:
-        return render_template("userchat.html", results=UserChat.query.all())
+    print ("Hallo Userchat")
+    return render_template("userchat.html")
 
-@socketio.on('my event')
-def handle_my_custom_event(json, methods=['GET', 'POST']):
-    print('received my event: ' + str(json))
-    socketio.emit('my response', json, callback=messageReceived)
+@socketio.on('message')
+def handleMessage(msg):
+    print(msg)
+    send(msg, broadcast=True)
 
+@socketio.on('myevent')
+def handleMyEvent(input):
+    print('received my event: ' + str(input))
+    socketio.send(input)
 
 @application.route("/chatbotInit", methods=["GET"])
 def chatbotInit():
