@@ -92,6 +92,7 @@ def userchat():
 @socketio.on('message')
 def handleMessage(msg):
     print("message: " + msg)
+    room = "room0"
     send(msg, room=room)
 
 @socketio.on('myevent')
