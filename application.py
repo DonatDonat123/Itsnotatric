@@ -21,7 +21,7 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-application = Flask(__name__, static_folder = 'fotos')
+application = Flask(__name__, static_folder = 'static')
 
 SQLALCHEMY_DATABASE_URI = DB_URI
 
@@ -178,7 +178,7 @@ def recipes():
             #return redirect(url_for('uploaded_file',filename=filename))
             name = str(request.form["name"])
             descr = str(request.form["descr"])
-            recipe = Recipe(name=name, description=descr, filename = url_for('static',filename = filename))
+            recipe = Recipe(name=name, description=descr, filename = url_for('static',filename = 'fotos/'+filename))
             db.session.add(recipe)
             db.session.commit()
             db.session.close()
@@ -219,7 +219,7 @@ def work():
             #return redirect(url_for('uploaded_file',filename=filename))
             name = str(request.form["name"])
             descr = str(request.form["descr"])
-            project = Project(name=name, description=descr, filename = filename)
+            project = Project(name=name, description=descr, filename = 'fotos/'+filename)
             db.session.add(project)
             db.session.commit()
             db.session.close()

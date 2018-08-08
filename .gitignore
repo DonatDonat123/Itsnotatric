@@ -1,7 +1,6 @@
 rootkey.csv
 __pycache__
 oldapp/
-static/
 py32/
 
 # Elastic Beanstalk Files
