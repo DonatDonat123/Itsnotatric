@@ -92,16 +92,13 @@ def userchat():
 @socketio.on('message')
 def handleMessage(msg):
     print("message: " + msg)
-    room = "room0"
-    send(msg, room=room)
+    send(msg, broadcast=True)
 
 @socketio.on('myevent')
 def handleMyEvent(input):
     print('received my event: ' + str(input))
     room = input['room']
-    print ("room: " + room)
-    print (request.sid)
-    socketio.send(input, room=room)
+    send(input, room=room)
 
 @socketio.on('join')
 def handleJoin(data):
