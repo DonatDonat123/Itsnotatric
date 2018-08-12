@@ -12,9 +12,8 @@ client = googlemaps.Client(key)
 #####
 owm = pyowm.OWM('08d83af8b06526025140d9752d6fb9b3')  # You MUST provide a valid API key
 
-import nltk
-
-nltk.download('popular')
+#import nltk
+#nltk.download('popular')
 
 
 def random_answer():
