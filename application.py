@@ -10,7 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Boolean
 from werkzeug.utils import secure_filename
 from config import DB_URI, UP_FOLDER
-#from nlp import NLP
+from nlp_nltk import NLP
 
 #from db_setup import Dealers, Recipe, Project
 
@@ -92,12 +92,14 @@ def userchat():
 @socketio.on('message')
 def handleMessage(msg):
     print("message: " + msg)
+    join_room('room0')
     send(msg, broadcast=True)
 
 @socketio.on('myevent')
 def handleMyEvent(input):
     print('received my event: ' + str(input))
     room = input['room']
+    user = input['username']
     send(input, room=room)
 
 @socketio.on('join')
@@ -107,7 +109,30 @@ def handleJoin(data):
     join_room(room)
     send(username + ' has entered the room.', room=room)
 
-@application.route("/chatbotInit", methods=["GET"])
+@socketio.on('myBotEvent')
+def handleMyBot(data):
+    print('received my event: ' + str(data))
+    cfg = Chat.query.order_by(Chat.id.desc()).limit(1).one()
+    nlp = NLP(cfg.city1, cfg.city2, cfg.origin, cfg.blindshot, cfg.docity1, cfg.docity12, cfg.askorigin, cfg.bydistance,
+              cfg.askdist)
+    response, city1, city2, origin, blindshot, docity1, docity12, askorigin, bydistance, askdist = nlp.respond(data["message"])
+    entry1 = Chat(user=data["username"], message=data["message"], city1=city1, city2=city2, origin=origin, blindshot=blindshot,
+                  docity1=docity1, docity12=docity12 \
+                  , askorigin=askorigin, bydistance=bydistance, askdist=askdist)
+    entry2 = Chat(user='bot', message=response, city1=city1, city2=city2, origin=origin, blindshot=blindshot,
+                  docity1=docity1, docity12=docity12 \
+                  , askorigin=askorigin, bydistance=bydistance, askdist=askdist)
+    db.session.add(entry1)
+    db.session.add(entry2)
+    db.session.commit()
+    db.session.close()
+    output1 = {"username":data["username"], "message":data["message"]}
+    send(output1, broadcast=True)
+    output2 = {"username": "BOT", "message": response}
+    send(output2, broadcast=True)
+
+
+@application.route("/chatbotinit", methods=["GET"])
 def chatbotInit():
     entry1 = Chat(user = 'init', message = 'hello', city1=None, city2=None, origin=None, blindshot=False, docity1=False, docity12=False\
         ,askorigin=False, bydistance=False, askdist=False)
@@ -118,25 +143,8 @@ def chatbotInit():
 
 @application.route("/chatbot", methods=["GET", "POST"])
 def chatbot():
-    if request.method == "POST":
-        print ('THEY POSTED !!!')
-        user = 'user' # change with login later
-        message = str(request.form["message"])
-        cfg = Chat.query.order_by(Chat.id.desc()).limit(1).one()
-        nlp = NLP(cfg.city1, cfg.city2, cfg.origin, cfg.blindshot, cfg.docity1, cfg.docity12, cfg.askorigin, cfg.bydistance, cfg.askdist)
-        response, city1, city2, origin, blindshot, docity1, docity12, askorigin, bydistance, askdist = nlp.respond(message)
-        entry1 = Chat(user = user, message = message, city1=city1, city2=city2, origin=origin, blindshot=blindshot, docity1=docity1, docity12=docity12\
-        ,askorigin=askorigin, bydistance=bydistance, askdist=askdist)
-        entry2 = Chat(user = 'bot', message = response, city1=city1, city2=city2, origin=origin, blindshot=blindshot, docity1=docity1, docity12=docity12\
-                 ,askorigin=askorigin, bydistance=bydistance, askdist=askdist)
-        db.session.add(entry1)
-        db.session.add(entry2)
-        db.session.commit()
-        db.session.close()
-        #return render_template("carnovo.html", results=Dealers.query.all())
-        return redirect(url_for('chatbot'))
-    else:
-        return render_template("chatbot.html", results=Chat.query.all())
+    return render_template("chatbot.html")
+   # , results=Chat.query.all())
 
 
 @application.route("/cardealers", methods=["GET", "POST"])

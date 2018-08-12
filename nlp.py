@@ -17,7 +17,7 @@ os.environ['NLTK_DATA'] = os.getcwd() + '/nltk_data'
 from config import FILTER_WORDS
 # Set up spaCy
 #from spacy.lang.en import English
-import en_core_web_sm as eng
+
 parser = eng.load()
 #parser = English()
 
@@ -88,21 +88,6 @@ class NLP:
 		resp = self.respond(sentence)
 		return resp
 
-	def preprocess_text(self, sentence):
-		"""Handle some weird edge cases in parsing, like 'i' needing to be capitalized
-		to be correctly identified as a pronoun"""
-		cleaned = []
-		words = sentence.split(' ')
-		for w in words:
-			if w == 'i':
-				w = 'I'
-		if w == "i'm":
-			w = "I'm"
-		if w == "cya":
-			w = "See you"
-		cleaned.append(w)
-
-		return ' '.join(cleaned)
 
 	def find_pronoun(self, sent):
 		"""Given a sentence, find a preferred pronoun to respond with. Returns None if no candidate

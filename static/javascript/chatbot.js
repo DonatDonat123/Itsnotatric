@@ -51,14 +51,14 @@ var socket = io.connect('http://' + document.domain + ':' + location.port);
 
 socket.on( 'connect', function() {
   socket.send( 'connected')
-  room = 'room0'
+  room = 'room0 '
  })
 
 var btn = $('#sendbutton').on('click', function(e){
   e.preventDefault()
   var username = $('.username').val()
   var message = $('.message').val()
-  socket.emit('myevent', {
+  socket.emit('myBotEvent', {
     username: username,
     message: message,
     room:room
