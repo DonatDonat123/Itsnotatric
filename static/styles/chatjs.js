@@ -26,7 +26,7 @@ function insertChat(who, text, time){
     if (who == "me"){
         control = '<li style="width:100%">' +
                         '<div class="msj macro">' +
-                        '<div class="avatar"><img class="img-circle" style="width:100%;" src="'+ me.avatar +'" /></div>' +
+                        '<div class="avatar"><img class="img-circle";" src="'+ me.avatar +'" /></div>' +
                             '<div class="text text-l">' +
                                 '<p>'+ text +'</p>' +
                                 '<p><small>'+date+'</small></p>' +
@@ -40,7 +40,7 @@ function insertChat(who, text, time){
                                 '<p>'+text+'</p>' +
                                 '<p><small>'+date+'</small></p>' +
                             '</div>' +
-                        '<div class="avatar" style="padding:0px 0px 0px 10px !important"><img class="img-circle" style="width:100%;" src="'+you.avatar+'" /></div>' +
+                        '<div class="avatar" style="padding:0px 0px 0px 10px !important"><img class="img-circle";"src="'+you.avatar+'" /></div>' +
                   '</li>';
     }
     setTimeout(
