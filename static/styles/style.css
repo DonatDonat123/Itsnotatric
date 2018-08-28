@@ -15,10 +15,16 @@ body{
     padding:0;
 }
 
- .myframe > div:last-of-type{
+ .input{
     position:absolute;
-    bottom:10;
+    bottom:10px;
     width:100%;
+    display:flex;
+
+}
+
+.inputform{
+    width: 90px; height: 390px; border: 1px solid #999999; padding: 5px;
 }
 
 ul {
