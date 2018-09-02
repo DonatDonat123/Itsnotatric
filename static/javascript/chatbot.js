@@ -20,11 +20,11 @@ function insertChat(text, user){
     var date = formatAMPM(new Date());
     if (user == 'user'){
         control = '<div class="row">' +
-                        '<div class="col-1"> </div>' +
-                        '<div class="col-1">' +
-                            '<img class="img-left img-avatar" src="'+ me.avatar +'" />' +
+                        '<div class="col-sm-1 col-1"> </div>' +
+                        '<div class="col-sm-1 col-3">' +
+                            '<img class="img-fluid" src="'+ me.avatar +'" />' +
                         '</div>' +
-                        '<div class="col-4">' +
+                        '<div class="col-sm-4 col-6">' +
                             '<p>'+ text +'</p>' +
                             '<p><small>'+date+'</small></p>' + '<br>'+
                         '</div>' +
@@ -32,13 +32,13 @@ function insertChat(text, user){
     }
     else{
         control = '<div class="row">' +
-                '<div class="col-6"> </div>' +
-                '<div class="col-3 text-r">' +
+                '<div class="col-sm-6 col-2"> </div>' +
+                '<div class="col-sm-3 col-6 text-r">' +
                     '<p>'+ text +'</p>' +
                     '<p><small>'+date+'</small></p>' + '<br>'+
                 '</div>' +
-                '<div class="col-1">' +
-                    '<img class="img-right img-avatar" src="'+ bot.avatar +'" />' +
+                '<div class="col-sm-1 col-3">' +
+                    '<img class="img-fluid" src="'+ bot.avatar +'" />' +
                 '</div>'
                  '</div>';
     }

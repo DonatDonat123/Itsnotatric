@@ -1,25 +1,14 @@
-.chatbox{
-    overflow-y:scroll;
-    margin: 0px;
-    height: 65%;
-    width: 100%;
-    margin-top:5%;
-}
-
-.inputform{
-    height: 20%
-}
-
-
-html,body{
-    height: 100%;
-    width: 100%;
-}
-
-.img-avatar{
-    width: 100%;
-}
-
 .text-r{
     text-align: right;
+}
+
+.chatbox{
+    margin-top: 5%;
+    padding-top: 5%;
+    overflow-y: scroll;
+    height: 75%
+}
+
+html, body{
+    height: 100%
 }
