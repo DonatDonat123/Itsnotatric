@@ -1,63 +1,25 @@
-h2{
-  background: rgb(255, 255, 255)
-  font-family: sans-serif;
+.chatbox{
+    overflow-y:scroll;
+    margin: 0px;
+    height: 65%;
+    width: 100%;
+    margin-top:5%;
 }
 
-body{
-  background: rgb(255, 255, 255);
-  font-family: sans-serif;
-}
-
-.myframe{
-    background:rgb(240. 240, 240);
-    height:500px;
-    overflow:scroll;
-    padding:0;
-}
-
-.input{
-    position:absolute;
-    bottom:10px;
-    width:100%;
-    display:flex;
-
-}
-/*
 .inputform{
-    width: 90px; height: 190px; border: 1px solid #999999; padding: 5px;
-}
-*/
-ul {
-    width:100%;
-    height: 200px;
-    list-style-type: none;
-    display:flex;
-    flex-direction: column;
+    height: 20%
 }
 
-.avatar_user{
-    width:7%;
-    float:left;
+
+html,body{
+    height: 100%;
+    width: 100%;
 }
 
-.avatar_other{
-    width:7%;
-    float:right;
-    padding-right: 20%;
-    }
-
-.text{
-    display:flex;
-    flex-direction:column;
+.img-avatar{
+    width: 100%;
 }
 
-.text-l{
-    float:left;
-    margin:0px;
-    padding-left:10px;
-}
 .text-r{
-    float:right;
-    padding-left:10px;
-    padding-right:10px
+    text-align: right;
 }

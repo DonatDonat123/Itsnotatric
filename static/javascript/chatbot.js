@@ -4,7 +4,6 @@ me.avatar = "./static/fotos/dd_profile.png";
 var bot = {};
 bot.avatar = "./static/fotos/alien.jpg";
 
-
 function formatAMPM(date) {
     var hours = date.getHours();
     var minutes = date.getMinutes();
@@ -19,32 +18,33 @@ function formatAMPM(date) {
 function insertChat(text, user){
     var date = '2017-01-01' ;
     var date = formatAMPM(new Date());
-    if (user == 'Dennis'){
-        control = '<li style="width:100%">' +
-                        '<div class="msj macro">' +
-                            '<div class="avatar_user"><img class="img-left" style="width:100%;" src="'+ me.avatar +'" /></div>' +
-                            '<div class="text text-l">' +
-                                '<p>'+ text +'</p>' +
-                                '<p><small>'+date+'</small></p>' + '<br>'+
-                            '</div>' +
+    if (user == 'user'){
+        control = '<div class="row">' +
+                        '<div class="col-1"> </div>' +
+                        '<div class="col-1">' +
+                            '<img class="img-left img-avatar" src="'+ me.avatar +'" />' +
                         '</div>' +
-                    '</li>';
+                        '<div class="col-4">' +
+                            '<p>'+ text +'</p>' +
+                            '<p><small>'+date+'</small></p>' + '<br>'+
+                        '</div>' +
+                    '</div>';
     }
     else{
-        control = '<li style="width:100%">' +
-                        '<div class="msj macro">' +
-                            '<div class="avatar_other"><img class="img-right" style="width:100%;" src="'+ bot.avatar +'" /></div>' +
-                            '<div class="text text-r">' +
-                                '<p>'+ text +'</p>' +
-                                '<p><small>'+date+'</small></p>' +'<br>'+
-                            '</div>' +
-                        '</div>' +
-                    '</li>';
+        control = '<div class="row">' +
+                '<div class="col-6"> </div>' +
+                '<div class="col-3 text-r">' +
+                    '<p>'+ text +'</p>' +
+                    '<p><small>'+date+'</small></p>' + '<br>'+
+                '</div>' +
+                '<div class="col-1">' +
+                    '<img class="img-right img-avatar" src="'+ bot.avatar +'" />' +
+                '</div>'
+                 '</div>';
     }
 
 
-    $("ul.message_holder").append(control).scrollTop($("ul").prop('scrollHeight'));
-
+    $(".chatbox").append(control);
 }
 
 var socket = io.connect('http://' + document.domain + ':' + location.port);
@@ -55,44 +55,34 @@ socket.on( 'connect', function() {
  })
 
 var btn = $('#sendbutton').on('click', function(e){
+  console.log("CLOCKED")
   e.preventDefault()
-  var username = $('.username').val()
-  var message = $('.message').val()
+  var message = $('.inputmessage').val()
+  var username = 'user'
   socket.emit('myBotEvent', {
     username: username,
     message: message,
     room:room
   })
-  $('.message').val('')
+  $('.inputmessage').val('')
   console.log("username: " + username)
   console.log("message: " + message)
-  console.log("room: " + room)
-})
-
-var roombtn = $('#roombutton').on('click', function(e){
-  e.preventDefault()
-  var username = $('.username').val()
-  room = e.target.value // declare globally
-  socket.emit('join', {
-    username: username,
-    room: room
-  })
-  console.log("username: " + username)
   console.log("room: " + room)
 })
 
 socket.on('message', function(msg){
   console.log("Message in JS Received !!!")
   if( typeof msg.username !== 'undefined' && msg.message!=='') {
-    $( 'h3' ).remove()
-    //$( 'ul.message_holder' ).append( '<div><b style="color: #000">'+msg.username+'</b> '+msg.message+'</div>' )
     insertChat(msg.message, msg.username)
   }
-  else {$('h3').text(msg)}
+  else {
+  console.log("username undefined or message empty !!!")
+  console.log(msg.message)
+  }
+
 })
 
-insertChat("Hi", 'user')
-insertChat("How are you ?", 'other')
-insertChat("Anybody here ?", 'user')
-insertChat("I'm all alone ...", 'user')
-insertChat("Anyone... ?", 'other')
+insertChat("Hi", 'user');
+insertChat("How are you ?", 'other');
+insertChat("How are you ?", 'user');
+insertChat("How are you ?", 'other');
