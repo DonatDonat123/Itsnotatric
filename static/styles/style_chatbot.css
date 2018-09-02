@@ -2,11 +2,18 @@
     text-align: right;
 }
 
+.row{
+}
+
 .chatbox{
     margin-top: 5%;
-    padding-top: 5%;
     overflow-y: scroll;
-    height: 75%
+    height: 60%;
+}
+
+.inputform{
+    margin-top: 5%;
+    height:10%;
 }
 
 html, body{
