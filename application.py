@@ -80,7 +80,6 @@ class UserChat(db.Model):
 #db.create_all()
 
 @application.route("/")
-
 def index():
     return render_template('index.html')
 
@@ -88,6 +87,16 @@ def index():
 def userchat():
     print ("Hallo Userchat")
     return render_template("userchat.html")
+
+@application.route("/userchathyper", methods=["GET", "POST"])
+def userchathyper():
+    print ("Hallo Userchat")
+    return render_template("userchathyper.html")
+
+@application.route("/playpage", methods=["GET"])
+def playpage():
+    print("Hallo Playpage")
+    return render_template('playpage.html')
 
 @socketio.on('message')
 def handleMessage(msg):
@@ -130,7 +139,6 @@ def handleMyBot(data):
     send(output1, broadcast=True)
     output2 = {"username": "BOT", "message": response}
     send(output2, broadcast=True)
-
 
 @application.route("/chatbotinit", methods=["GET"])
 def chatbotInit():

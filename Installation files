@@ -1,0 +1,6 @@
+pip install mysqlclient
+pip install mysql-connector-python
+pip install pyowm
+pip install googlemaps
+pip install spacy
+python -m spacy download en_core_web_sm

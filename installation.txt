@@ -1,0 +1,16 @@
+Installations:
+virtualenv --python=/usr/bin/python2.6 <path/to/new/virtualenv/>
+sudo apt-get install python3-dev libmysqlclient-dev
+pip install -r req.text
+python -m spacy download en_core_web_sm
+
+Amazon Web Service: (Elastic Beanstalk)
+pip install awsebcli --upgrade --user
+
+Dann Die App bilden: (basically following https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create-deploy-python-flask.html) 
+.ebignore file machen
+eb init -p python-3.5.2 flask-app --region eu-central-1
+
+
+To connect to the db locally, add this beast here:
+https://stackoverflow.com/questions/37212945/aws-cant-connect-to-rds-database-from-my-machine/37218127#37218127
