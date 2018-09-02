@@ -141,7 +141,7 @@ def handleMyBot(data):
     send(output2, broadcast=True)
 
 @application.route("/chatbotinit", methods=["GET"])
-def chatbotInit():
+def chatbotinit():
     entry1 = Chat(user = 'init', message = 'hello', city1=None, city2=None, origin=None, blindshot=False, docity1=False, docity12=False\
         ,askorigin=False, bydistance=False, askdist=False)
     db.session.add(entry1)
