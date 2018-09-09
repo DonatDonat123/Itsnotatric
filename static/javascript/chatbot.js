@@ -25,8 +25,8 @@ function scrollSmoothToBottom (id) {
 
 function scrollHardToBottom (id) {
     var div = $(id)
-    //div.scrollTop(div[0].scrollHeight);
-    div.animate({scrollTop: div[0].scrollHeight}, 1000)
+    div.scrollTop(div[0].scrollHeight);
+    //div.animate({scrollTop: div[0].scrollHeight}, 1000)
 }
 
 function insertChat(text, user){
