@@ -15,14 +15,6 @@ function formatAMPM(date) {
     return strTime;
 }
 
-function scrollSmoothToBottom (id) {
-   var div = document.getElementsByClassName(id);
-   console.log("SCROLLING !!")
-   $('#' + id).animate({
-      scrollTop: div.scrollHeight
-   }, 500);
-}
-
 function scrollHardToBottom (id) {
     var div = $(id)
     //div.scrollTop(div[0].scrollHeight);
@@ -89,8 +81,6 @@ socket.on('message', function(msg){
   console.log("Message in JS Received !!!")
   if( typeof msg.username !== 'undefined' && msg.message!=='') {
     insertChat(msg.message, msg.username)
-    //$(".chatbox").scrollTop($(".chatbox")[0].scrollHeight);
-    //scrollSmoothToBottom('chatbox');
   }
   else {
   console.log("username undefined or message empty !!!")
