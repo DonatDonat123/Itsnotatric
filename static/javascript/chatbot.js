@@ -34,11 +34,11 @@ function insertChat(text, user){
     var date = formatAMPM(new Date());
     if (user == 'user'){
         control = '<div class="row">' +
-                        '<div class="col-lg-1 col-1"> </div>' +
-                        '<div class="col-lg-1 col-3">' +
+                        '<div class="col-lg-1 col-md-1 col-1"> </div>' +
+                        '<div class="col-lg-1 col-md-2 col-3">' +
                             '<img class="img-fluid" src="'+ me.avatar +'" />' +
                         '</div>' +
-                        '<div class="col-lg-4 col-6">' +
+                        '<div class="col-lg-4 col-md-5 col-6">' +
                             '<p>'+ text +'</p>' +
                             '<p><small>'+date+'</small></p>' + '<br>'+
                         '</div>' +
