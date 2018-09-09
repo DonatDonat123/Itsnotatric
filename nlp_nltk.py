@@ -1,4 +1,5 @@
 import random
+import numpy as np
 import logging
 import os
 import pyowm
@@ -13,64 +14,95 @@ client = googlemaps.Client(key)
 owm = pyowm.OWM('08d83af8b06526025140d9752d6fb9b3')  # You MUST provide a valid API key
 
 import nltk
-#nltk.download('popular')
-from nltk.tokenize import PunktSentenceTokenizer
+from nltk.tag import StanfordNERTagger
+from nltk.tokenize import word_tokenize
 
+
+STANFORD_JAR_FILE = './stanford-ner/stanford-ner.jar'
+STANFORD_ENG_FILE = './stanford-ner/classifiers/english.all.3class.distsim.crf.ser.gz'
+
+INTRODUCTION = "Hello. I am LASTMINUTE-HELPER. If you want to go for a city trip and you haven't decided yet where to," \
+               "then I'm your man...amm bot. I can help you to decide between 2 cities, give you more information about 1 city or even" \
+               "give you my personal suggestion of the day if you don't have any plan. But first things first: What's your origin ?"
+
+GENERAL_RESPONSES = ("We will see", "Ok, but that's not really true", "You wanna think about it again ?",
+                     "...Rom wasn't build in a day", "I know, Mordor is the real problem",
+                     "Sometimes it's better to stay home",
+                     "I din't catch that to be honest", "That's interesting, but let's talk CITIES :)",
+                     "Even a broken watch is two times right per day...")
+
+GREETING_RESPONSES = ("hello back !", "hi, how are you ?", "What's up", "Nice to hear from you, how can I serve ?", "Good Day")
+
+GREETING_SET = ("hello", "hi", "yo", "how are you", "hi man", "hey", "what's up", "good morning", "good evening","good afternoon")
+
+RESPONSE_FOUND_1_CITY = "You want to know more about {}, is this correct ?"
+RESPONSE_FOUND_2_CITIES = "You want to compare {} with {}, correct ?"
 
 
 def random_answer():
-    GENERAL_RESPONSES = ("We will see", "Ok, but that's not really true", "You wanna think about it again ?",
-                         "...Rom wasn't build in a day",
-                         "I din't catch that to be honest", "That's interesting, but let's talk CITIES :)",
-                         "Even a broken watch is two times right per day...")
     return random.choice(GENERAL_RESPONSES)
 
-
 def check_for_greeting(sentence):
-    GREETING_SET = (
-        "hello", "hi", "yo", "how are you", "hi man", "hey", "what's up", "good morning", "good evening",
-        "good afternoon")
-    return any(sentence in s for s in GREETING_SET)
-
+    return any(s in sentence for s in GREETING_SET)
 
 def give_random_greeting():
-    GREETING_RESPONSES = (
-        "hello back !", "hi, how are you ?", "What's up", "Nice to hear from you, how can I serve ?", "Good Day")
     resp = random.choice(GREETING_RESPONSES)
     return resp
 
-
 class NLP:
-    def __init__(self, city1, city2, origin, blindshot, docity1, docity12, askorigin, bydistance, askdist):
+    def __init__(self):
         print("NLP class was created")
-        self.city1 = city1
-        self.city2 = city2
-        self.origin = origin
-        self.blindshot = blindshot
-        self.docity1 = docity1
-        self.docity12 = docity12
-        self.askorigin = askorigin
-        self.bydistance = bydistance  # by default we take weather as important parameter
-        self.askdist = askdist
+        self.city1 = None
+        self.city2 = None
+        self.many_cities = None
+        self.origin = None
+        self.blindshot = False
+        self.tagger = StanfordNERTagger(STANFORD_ENG_FILE, STANFORD_JAR_FILE, encoding='utf-8')
 
     def introduction(self):
-        resp = "Hello. I am LASTMINUTE-HELPER. If you want to go for a city trip and you haven't decided yet where to,\
-    then I'm your man...amm bot. I can help you to decide between 2 cities, give you more information about 1 city or even \
-    give you my personal suggestion of the day if you don't have any plan. But first things first: What's your origin ?"
-        self.askorigin = True
-        print('set askorigin to true, right ? ')
-        print(self.askorigin)
-        return resp
+        return INTRODUCTION
 
-    # That's the main function that returns our response
+    def check_for_cities(self, text):
+        tokenized_text = word_tokenize(text)
+        tagged_text = np.array(self.tagger.tag(tokenized_text))
+        print ("tagged_text: {}".format(tagged_text))
+        cities = tagged_text[tagged_text[:, 1] == 'LOCATION'][:, 0]
+        if len(cities) == 0:
+            return False
+        elif len(cities) == 1:
+            self.city1 = cities[0]
+            return True
+        elif len(cities) == 2:
+            self.city1 = cities[0]
+            self.city2 = cities[1]
+            return True
+        elif len(cities) > 2:
+            self.many_cities = cities
+
+    def found_1_city(self):
+        return RESPONSE_FOUND_1_CITY.format(self.city1)
+
+    def found_2_cities(self):
+        return RESPONSE_FOUND_2_CITIES.format(self.city1, self.city2)
+
+    def found_many_cities(self):
+        response = "I detected: "
+        for city in self.many_cities:
+            response.append("{}, ".format(city))
+        response.append(". Please decide for 2 cities")
+        return response
+
     def respond(self, sentence):
         print('input message = {}'.format(sentence))
         resp = None
         if any(sentence in s for s in ("start", "\start")):
-            resp = self.introduction();
+            return self.introduction();
         elif check_for_greeting(sentence):
-            resp = give_random_greeting()
+            return give_random_greeting()
+        elif self.check_for_cities(sentence):
+            if self.many_cities: resp = self.found_many_cities()
+            elif self.city1 and self.city2: resp = self.found_2_cities()
+            elif self.city1: resp = self.found_1_city()
         else:
             resp = random_answer();
-
-        return resp, self.city1, self.city2, self.origin, self.blindshot, self.docity1, self.docity12, self.askorigin, self.bydistance, self.askdist
+        return resp

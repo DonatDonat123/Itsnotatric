@@ -15,6 +15,20 @@ function formatAMPM(date) {
     return strTime;
 }
 
+function scrollSmoothToBottom (id) {
+   var div = document.getElementsByClassName(id);
+   console.log("SCROLLING !!")
+   $('#' + id).animate({
+      scrollTop: div.scrollHeight
+   }, 500);
+}
+
+function scrollHardToBottom (id) {
+    var div = $(id)
+    //div.scrollTop(div[0].scrollHeight);
+    div.animate({scrollTop: div[0].scrollHeight}, 1000)
+}
+
 function insertChat(text, user){
     var date = '2017-01-01' ;
     var date = formatAMPM(new Date());
@@ -43,8 +57,9 @@ function insertChat(text, user){
                  '</div>';
     }
 
-
     $(".chatbox").append(control);
+    scrollHardToBottom(".chatbox");
+    //scrollSmoothToBottom('chatbox');
 }
 
 var socket = io.connect('http://' + document.domain + ':' + location.port);
@@ -74,6 +89,8 @@ socket.on('message', function(msg){
   console.log("Message in JS Received !!!")
   if( typeof msg.username !== 'undefined' && msg.message!=='') {
     insertChat(msg.message, msg.username)
+    //$(".chatbox").scrollTop($(".chatbox")[0].scrollHeight);
+    //scrollSmoothToBottom('chatbox');
   }
   else {
   console.log("username undefined or message empty !!!")

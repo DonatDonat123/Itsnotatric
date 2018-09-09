@@ -32,6 +32,7 @@ application.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 socketio = SocketIO(application)
 db = SQLAlchemy(application)
+nlp = NLP()
 
 class Dealers(db.Model):
     __tablename__ = "dealers"
@@ -52,21 +53,6 @@ class Project(db.Model):
     name = db.Column(String(128))
     description = db.Column(String(1028))
     filename = db.Column(String(128))
-
-class Chat(db.Model):
-    __tablename__ = "chat"
-    id = db.Column(db.Integer, primary_key=True)
-    user = db.Column(String(128)) #bot or user
-    message = db.Column(String(1028))
-    city1 = db.Column(String(24))
-    city2 = db.Column(String(24))
-    origin = db.Column(String(24))
-    blindshot = db.Column(Boolean)
-    docity1 = db.Column(Boolean)
-    docity12 = db.Column(Boolean)
-    askorigin = db.Column(Boolean)
-    bydistance = db.Column(Boolean)
-    askdist = db.Column(Boolean)
 
 class UserChat(db.Model):
     __tablename__ = "userchat"
@@ -121,33 +107,19 @@ def handleJoin(data):
 @socketio.on('myBotEvent')
 def handleMyBot(data):
     print('received my event: ' + str(data))
-    cfg = Chat.query.order_by(Chat.id.desc()).limit(1).one()
-    nlp = NLP(cfg.city1, cfg.city2, cfg.origin, cfg.blindshot, cfg.docity1, cfg.docity12, cfg.askorigin, cfg.bydistance,
-              cfg.askdist)
-    response, city1, city2, origin, blindshot, docity1, docity12, askorigin, bydistance, askdist = nlp.respond(data["message"])
-    entry1 = Chat(user=data["username"], message=data["message"], city1=city1, city2=city2, origin=origin, blindshot=blindshot,
-                  docity1=docity1, docity12=docity12 \
-                  , askorigin=askorigin, bydistance=bydistance, askdist=askdist)
-    entry2 = Chat(user='bot', message=response, city1=city1, city2=city2, origin=origin, blindshot=blindshot,
-                  docity1=docity1, docity12=docity12 \
-                  , askorigin=askorigin, bydistance=bydistance, askdist=askdist)
+    output1 = {"username":data["username"], "message":data["message"]}
+    send(output1, broadcast=True)
+    #cfg = Chat.query.order_by(Chat.id.desc()).limit(1).one()
+    # nlp = NLP()
+    response = nlp.respond(data["message"])
+    entry1 = UserChat(user=data["username"], message=data["message"])
+    entry2 = UserChat(user='bot', message=response)
     db.session.add(entry1)
     db.session.add(entry2)
     db.session.commit()
     db.session.close()
-    output1 = {"username":data["username"], "message":data["message"]}
-    send(output1, broadcast=True)
     output2 = {"username": "BOT", "message": response}
     send(output2, broadcast=True)
-
-@application.route("/chatbotinit", methods=["GET"])
-def chatbotinit():
-    entry1 = Chat(user = 'init', message = 'hello', city1=None, city2=None, origin=None, blindshot=False, docity1=False, docity12=False\
-        ,askorigin=False, bydistance=False, askdist=False)
-    db.session.add(entry1)
-    db.session.commit()
-    db.session.close()
-    return redirect(url_for('chatbot'))
 
 @application.route("/chatbot", methods=["GET", "POST"])
 def chatbot():
