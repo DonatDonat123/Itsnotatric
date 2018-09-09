@@ -52,15 +52,25 @@ def give_random_greeting():
 class NLP:
     def __init__(self):
         print("NLP class was created")
+        self.reset_all_config_variables()
+        self.tagger = StanfordNERTagger(STANFORD_ENG_FILE, STANFORD_JAR_FILE, encoding='utf-8')
+
+    def reset_all_config_variables(self, verbose = False):
         self.city1 = None
         self.city2 = None
         self.many_cities = None
         self.origin = None
         self.blindshot = False
-        self.tagger = StanfordNERTagger(STANFORD_ENG_FILE, STANFORD_JAR_FILE, encoding='utf-8')
+        self.need_confirmation_1_city = False
+        self.need_confirmation_2_cities = False
+        self.need_confirmation_many_cities = False
+        if verbose:
+            return "Everything reset, what do you want to do now ?"
 
     def introduction(self):
         return INTRODUCTION
+
+
 
     def check_for_cities(self, text):
         tokenized_text = word_tokenize(text)
@@ -71,13 +81,17 @@ class NLP:
             return False
         elif len(cities) == 1:
             self.city1 = cities[0]
+            self.need_confirmation_1_city = True
             return True
         elif len(cities) == 2:
             self.city1 = cities[0]
             self.city2 = cities[1]
+            self.need_confirmation_2_cities = True
             return True
         elif len(cities) > 2:
             self.many_cities = cities
+            self.need_confirmation_many_cities = True
+            return True
 
     def found_1_city(self):
         return RESPONSE_FOUND_1_CITY.format(self.city1)
@@ -92,11 +106,15 @@ class NLP:
         response.append(". Please decide for 2 cities")
         return response
 
+
+
     def respond(self, sentence):
         print('input message = {}'.format(sentence))
         resp = None
         if any(sentence in s for s in ("start", "\start")):
             return self.introduction();
+        elif any(sentence in s for s in ("reset", "cancel")):
+            return self.reset_all_config_variables(verbose=True);
         elif check_for_greeting(sentence):
             return give_random_greeting()
         elif self.check_for_cities(sentence):
