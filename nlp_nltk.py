@@ -25,29 +25,33 @@ INTRODUCTION = "Hello. I am LASTMINUTE-HELPER. If you want to go for a city trip
                "then I'm your man...amm bot. I can help you to decide between 2 cities, give you more information about 1 city or even" \
                "give you my personal suggestion of the day if you don't have any plan. But first things first: What's your origin ?"
 
-GENERAL_RESPONSES = ("We will see", "Ok, but that's not really true", "You wanna think about it again ?",
+GENERAL_RESPONSES = ["We will see", "Ok, but that's not really true", "You wanna think about it again ?",
                      "...Rom wasn't build in a day", "I know, Mordor is the real problem",
                      "Sometimes it's better to stay home",
                      "I din't catch that to be honest", "That's interesting, but let's talk CITIES :)",
-                     "Even a broken watch is two times right per day...")
+                     "Even a broken watch is two times right per day..."]
 
-GREETING_RESPONSES = ("hello back !", "hi, how are you ?", "What's up", "Nice to hear from you, how can I serve ?", "Good Day")
+GREETING_RESPONSES = ["hello back !", "hi, how are you ?", "What's up", "Nice to hear from you, how can I serve ?", "Good Day"]
 
-GREETING_SET = ("hello", "hi", "yo", "how are you", "hi man", "hey", "what's up", "good morning", "good evening","good afternoon")
+GREETING_SET = {"hello", "hi", "yo", "how are you", "hi man", "hey", "what's up", "good morning", "good evening","good afternoon"}
 
 RESPONSE_FOUND_1_CITY = "You want to know more about {}, is this correct ?"
 RESPONSE_FOUND_2_CITIES = "You want to compare {} with {}, correct ?"
 
+CONFIRMATIONS_SET = {"yes", "y", "yep", "ok", "correct"}
 
 def random_answer():
     return random.choice(GENERAL_RESPONSES)
 
 def check_for_greeting(sentence):
-    return any(s in sentence for s in GREETING_SET)
+    return any(greeting in sentence for greeting in GREETING_SET)
 
 def give_random_greeting():
     resp = random.choice(GREETING_RESPONSES)
     return resp
+
+def _check_for_confirmation(sentence):
+    return any(confirmation in sentence for confirmation in CONFIRMATIONS_SET )
 
 class NLP:
     def __init__(self):
@@ -69,8 +73,6 @@ class NLP:
 
     def introduction(self):
         return INTRODUCTION
-
-
 
     def check_for_cities(self, text):
         tokenized_text = word_tokenize(text)
@@ -106,8 +108,6 @@ class NLP:
         response.append(". Please decide for 2 cities")
         return response
 
-
-
     def respond(self, sentence):
         print('input message = {}'.format(sentence))
         resp = None
@@ -115,6 +115,9 @@ class NLP:
             return self.introduction();
         elif any(sentence in s for s in ("reset", "cancel")):
             return self.reset_all_config_variables(verbose=True);
+        elif self.need_confirmation_1_city:
+            if _check_for_confirmation(sentence):
+                return self.describe_one_city()
         elif check_for_greeting(sentence):
             return give_random_greeting()
         elif self.check_for_cities(sentence):
