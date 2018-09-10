@@ -51,7 +51,7 @@ def give_random_greeting():
     return resp
 
 def _check_for_confirmation(sentence):
-    return any(confirmation in sentence for confirmation in CONFIRMATIONS_SET )
+    return any(confirmation in sentence for confirmation in CONFIRMATIONS_SET)
 
 class NLP:
     def __init__(self):
@@ -106,6 +106,19 @@ class NLP:
         for city in self.many_cities:
             response.append("{}, ".format(city))
         response.append(". Please decide for 2 cities")
+        return response
+
+    def describe_one_city(self):
+
+        fc1 = owm.daily_forecast(self.city1)
+        tomorrow = pyowm.timeutils.tomorrow()
+        sunny1 = fc1.will_be_sunny_at(tomorrow)
+        weather1 = fc1.get_weather_at(tomorrow)
+        temp1 = weather1.get_temperature(unit='celsius')["day"]
+
+        response = "First of all, let's talk about the weather in {}. The temperature will be {} tomorrow"\
+            .       format(self.city1, temp1)
+
         return response
 
     def respond(self, sentence):
