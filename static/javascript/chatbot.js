@@ -38,12 +38,12 @@ function insertChat(text, user){
     }
     else{
         control = '<div class="row">' +
-                '<div class="col-lg-6 col-2"> </div>' +
-                '<div class="col-lg-3 col-6 text-r">' +
+                '<div class="col-lg-6 col-md-4 col-2"> </div>' +
+                '<div class="col-lg-3 col-md-5 col-6 text-r">' +
                     '<p>'+ text +'</p>' +
                     '<p><small>'+date+'</small></p>' + '<br>'+
                 '</div>' +
-                '<div class="col-lg-1 col-3">' +
+                '<div class="col-lg-1 col-md-2 col-3">' +
                     '<img class="img-fluid" src="'+ bot.avatar +'" />' +
                 '</div>'
                  '</div>';
