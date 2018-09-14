@@ -19,6 +19,7 @@ from nltk.tokenize import word_tokenize
 
 from strings.city_list import CITIES
 
+TRAVELMODE = "driving"
 STANFORD_JAR_FILE = './stanford-ner/stanford-ner.jar'
 STANFORD_ENG_FILE = './stanford-ner/classifiers/english.all.3class.distsim.crf.ser.gz'
 
@@ -40,9 +41,14 @@ RESPONSE_FOUND_1_CITY = "You want to know more about {}, is this correct ?"
 RESPONSE_FOUND_2_CITIES = "You want to compare {} with {}, correct ?"
 
 CONFIRMATIONS_SET = {"yes", "y", "yep", "ok", "correct"}
+WHEATHER_SET = {"wheather", "climate", "sunny", "temperature", "warm"}
+DISTANCE_SET = {"distance", "time", "travel", "travel-time", "road", "car", "how long"}
+
 
 DESCRIBE_WHEATHER_1_CITY = "First of all, let's talk about the weather in {}. The temperature will be {} °C tomorrow"
 DESCRIBE_WHEATHER_2_CITIES = "In {} it will be {} °C and in {} {} °C tomorrow"
+DESCRIBE_TRAVELTIME_2_CITIES = "From your origin ({}), it takes you only {} to {}, but {} to {}."
+WHEATHER_OR_DISTANCE = "Do you want to decide by wheather or distance ?"
 
 ASK_FOR_INSTRUCTIONS = "Sorry for that. Please ask me again in other words."
 
@@ -59,6 +65,12 @@ def give_random_greeting():
 def _check_for_confirmation(sentence):
     return any(confirmation in sentence for confirmation in CONFIRMATIONS_SET)
 
+def _check_for_wheather(sentence):
+    return any(confirmation in sentence for confirmation in WHEATHER_SET)
+
+def _check_for_distance(sentence):
+    return any(confirmation in sentence for confirmation in DISTANCE_SET)
+
 def words_in_city_list(tokenized_text):
     cities_found = []
     for word in tokenized_text:
@@ -73,6 +85,16 @@ def get_wheather(city):
     weather1 = fc1.get_weather_at(tomorrow)
     temperature = np.round(weather1.get_temperature(unit='celsius')["day"]).astype(int)
     return sunny, temperature
+
+def traveltime_between_cities(city1, city2, travel_mode):
+    """Valid values for travel_mode are driving, walking, transit or bicycling"""
+    client = googlemaps.Client(key)
+    now = datetime.now()
+    travel_information = client.distance_matrix(city1, city2, mode=travel_mode, language="en-AU",
+                                                avoid="tolls",departure_time=now,
+                                                units="imperial", traffic_model="optimistic")
+    duration = travel_information['rows'][0]['elements'][0]['duration']['text']
+    return duration
 
 class NLP:
     def __init__(self):
@@ -96,6 +118,7 @@ class NLP:
         if confirmations or all_except_origin:
             self.need_confirmation_1_city = False
             self.need_confirmation_2_cities = False
+            self.need_confirmation_wheather_or_distance = False
         if ask_for_origin or all:
             self.ask_for_origin = False
         if origin:
@@ -167,11 +190,32 @@ class NLP:
         sunny1, temp1 = get_wheather(self.city1)
         return DESCRIBE_WHEATHER_1_CITY.format(self.city1, temp1)
 
-    def compare_two_cities(self):
+    def compare_two_cities_wheather(self):
         sunny1, temp1 = get_wheather(self.city1)
         sunny2, temp2 = get_wheather(self.city2)
         return DESCRIBE_WHEATHER_2_CITIES.format(self.city1, temp1, self.city2, temp2)
 
+    def compare_two_cities_traveltime(self):
+        traveltime1 = traveltime_between_cities(self.origin, self.city1, TRAVELMODE)
+        traveltime2 = traveltime_between_cities(self.origin, self.city2, TRAVELMODE)
+        if traveltime1 > traveltime2:
+            return DESCRIBE_TRAVELTIME_2_CITIES.format(self.origin, traveltime2, self.city2, traveltime1, self.city1)
+        else:
+            return DESCRIBE_TRAVELTIME_2_CITIES.format(self.origin, traveltime1, self.city1, traveltime2, self.city2)
+
+    def ask_wheather_or_distance(self):
+        self.need_confirmation_wheather_or_distance = True
+        return WHEATHER_OR_DISTANCE
+
+    def confirm_by_distance_or_wheather(self, sentence):
+        if _check_for_wheather(sentence):
+            self.need_confirmation_wheather_or_distance = False
+            return self.compare_two_cities_wheather()
+        if _check_for_distance(sentence):
+            self.need_confirmation_wheather_or_distance = False
+            return self.compare_two_cities_traveltime()
+        else:
+            return "I didn't get that. Again: distance or wheather ?"
 
     def confirm_city(self, number_cities, sentence):
         self.reset_config_variables(confirmations=True)
@@ -179,7 +223,7 @@ class NLP:
             if number_cities == 1:
                 return self.describe_one_city()
             elif number_cities == 2:
-                return self.compare_two_cities()
+                return self.ask_wheather_or_distance()
             else: raise ValueError("can only confirm for 1 or 2 cities")
         else:
             return self.ask_for_instructions()
@@ -199,6 +243,8 @@ class NLP:
             response = self.confirm_city(1, sentence)
         elif self.need_confirmation_2_cities:
             response = self.confirm_city(2, sentence)
+        elif self.need_confirmation_wheather_or_distance:
+            response = self.confirm_by_distance_or_wheather(sentence)
         elif check_for_greeting(sentence):
             response = give_random_greeting()
         elif self.check_for_cities(sentence):
@@ -216,3 +262,4 @@ if __name__ == "__main__":
     nlp.respond("Berlin")
     nlp.respond("Tell me about Berlin and Karlsruhe")
     nlp.respond("yes")
+    nlp.respond("distance")
