@@ -94,6 +94,11 @@ def editwork():
         #recipes = db.session.query(Recipe).all()
         return render_template('editwork.html', results = Project.query.all())
 
+@application.route('/lebenslauf', methods=["GET"])
+def lebenslauf():
+    return render_template('lebenslauf.html')
+
+
 @application.route('/work', methods=["GET"])
 def work():
     return render_template('work.html', results = Project.query.all())
