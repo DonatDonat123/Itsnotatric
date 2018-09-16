@@ -53,6 +53,16 @@
     Below you can find past projects of mine. For now only as .pdf
 </h2>
 
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+        <div class="alert alert-warning"> {{ message }} </div>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
 <div class="container">
     <div>
         <h1>PROJECTS:</h1>

@@ -2,7 +2,7 @@ import os
 import datetime
 import mysql
 import simplejson as json
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, url_for, flash
 from flask import  send_from_directory, session
 from flask_socketio import join_room, leave_room
 from flask_socketio import SocketIO, send
@@ -23,6 +23,7 @@ application.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 #application.config["SQLALCHEMY_POOL_RECYCLE"] = 3000
 application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 application.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+application.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 socketio = SocketIO(application)
 db = SQLAlchemy(application)
