@@ -22,13 +22,13 @@ html, body{
 
 .speech-bubble-left{
     position: relative;
-    background: #83ff77;
+    background: #dfffdb;
     border-radius: .4em;
 }
 
 .speech-bubble-right{
     position: relative;
-    background: #75eaff;
+    background: #dbe8ff;
     border-radius: .4em;
 }
 .speech-bubble-left:after{
@@ -39,8 +39,7 @@ html, body{
     width: 0;
     height: 0;
     border: 36px solid transparent;
-    border-right-color: #83ff77;
-    border-left-color:#83ff77;
+    border-right-color:#dfffdb;
     border-left: 0;
     border-bottom: 0;
     margin-top: -18px;
@@ -55,8 +54,7 @@ html, body{
     width: 0;
     height: 0;
     border: 36px solid transparent;
-    border-right-color: #75eaff;
-    border-left-color: #75eaff;
+    border-left-color: #dbe8ff;
     border-right: 0;
     border-bottom: 0;
     margin-top: -18px;

@@ -12,14 +12,8 @@ from werkzeug.utils import secure_filename
 from config import DB_URI, UP_FOLDER
 from nlp_nltk import NLP
 
-#from db_setup import Dealers, Recipe, Project
-
 UPLOAD_FOLDER = UP_FOLDER
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 application = Flask(__name__, static_folder = 'static')
 
@@ -33,19 +27,6 @@ application.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 socketio = SocketIO(application)
 db = SQLAlchemy(application)
 nlp = NLP()
-
-class Dealers(db.Model):
-    __tablename__ = "dealers"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(String(128))
-    pcode = db.Column(String(128))
-
-class Recipe(db.Model):
-    __tablename__ = "recipes"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(String(128))
-    description = db.Column(String(1028))
-    filename = db.Column(String(128))
 
 class Project(db.Model):
     __tablename__ = "project"
@@ -64,30 +45,83 @@ class UserChat(db.Model):
 # RUN OUTSIDE OF THE SCRIPT:
 #from db_setup import db
 #db.create_all()
+#or simply python db_setup.py
 
 @application.route("/")
 def index():
     return render_template('index.html')
-
-@application.route("/userchat", methods=["GET", "POST"])
-def userchat():
-    print ("Hallo Userchat")
-    return render_template("userchat.html")
-
-@application.route("/userchathyper", methods=["GET", "POST"])
-def userchathyper():
-    print ("Hallo Userchat")
-    return render_template("userchathyper.html")
 
 @application.route("/playpage", methods=["GET"])
 def playpage():
     print("Hallo Playpage")
     return render_template('playpage.html')
 
+@application.route('/interactive', methods=["GET", "POST"])
+def interactive():
+    return render_template('interactive.html')
+
+@application.route("/chatbot", methods=["GET", "POST"])
+def chatbot():
+    return render_template("chatbot.html")
+
+@application.route('/editwork', methods=["GET", "POST"])
+def editwork():
+    if request.method == "POST":
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(application.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            #return redirect(url_for('uploaded_file',filename=filename))
+            name = str(request.form["name"])
+            descr = str(request.form["descr"])
+            project = Project(name=name, description=descr, filename = filepath[1:])
+            db.session.add(project)
+            db.session.commit()
+            db.session.close()
+        # return send_from_directory(directory, filename, as_attachment=True)
+        return redirect(url_for('editwork'))
+    else:
+        #recipes = db.session.query(Recipe).all()
+        return render_template('editwork.html', results = Project.query.all())
+
+@application.route('/work', methods=["GET"])
+def work():
+    return render_template('work.html', results = Project.query.all())
+
+@application.route('/showwork/<int:idd>', methods=["GET"])
+def showwork(idd):
+    item = db.session.query(Project).filter_by(id=idd).one()
+    print(item.filename)
+    print(item)
+    print (idd)
+    return render_template('showwork.html',filename = item.filename)
+#    return render_template('work.html', filename=item.filename)
+
+    #return send_from_directory(UPLOAD_FOLDER, item.filename, as_attachment=True)
+
+@application.route('/deletework/<int:idd>', methods=["GET", "POST"])
+def deletework(idd):
+    itemToDelete = db.session.query(Project).filter_by(id=idd).one()
+    if request.method == 'POST':
+        db.session.delete(itemToDelete)
+        db.session.commit()
+        return render_template('deletework.html', name=itemToDelete.name)
+    else:
+        return render_template('deletework.html', name=itemToDelete.name)
+
 @socketio.on('message')
 def handleMessage(msg):
     print("message: " + msg)
-    join_room('room0')
     send(msg, broadcast=True)
 
 @socketio.on('myevent')
@@ -109,8 +143,6 @@ def handleMyBot(data):
     print('received my event: ' + str(data))
     output1 = {"username":data["username"], "message":data["message"]}
     send(output1, broadcast=True)
-    #cfg = Chat.query.order_by(Chat.id.desc()).limit(1).one()
-    # nlp = NLP()
     response = nlp.respond(data["message"])
     entry1 = UserChat(user=data["username"], message=data["message"])
     entry2 = UserChat(user='bot', message=response)
@@ -121,117 +153,9 @@ def handleMyBot(data):
     output2 = {"username": "BOT", "message": response}
     send(output2, broadcast=True)
 
-@application.route("/chatbot", methods=["GET", "POST"])
-def chatbot():
-    return render_template("chatbot.html")
-   # , results=Chat.query.all())
-
-
-@application.route("/cardealers", methods=["GET", "POST"])
-def cardealers():
-    if request.method == "POST":
-        print ('THEY POSTED !!!')
-        name = str(request.form["name"])
-        pcode = str(request.form["pcode"])
-        cardealer = Dealers(name=name, pcode=pcode)
-        db.session.add(cardealer)
-        db.session.commit()
-        db.session.close()
-        #return render_template("carnovo.html", results=Dealers.query.all())
-        return redirect(url_for('cardealers'))
-    else:
-        return render_template("carnovo.html", results=Dealers.query.all())
-
-
-@application.route('/recipes', methods=["GET", "POST"])
-def recipes():
-    if request.method == "POST":
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # if user does not select file, browser also
-        # submit a empty part without filename
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            #filename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(os.path.join(application.config['UPLOAD_FOLDER'], filename))
-            #return redirect(url_for('uploaded_file',filename=filename))
-            name = str(request.form["name"])
-            descr = str(request.form["descr"])
-            recipe = Recipe(name=name, description=descr, filename = url_for('static',filename = 'fotos/'+filename))
-            db.session.add(recipe)
-            db.session.commit()
-            db.session.close()
-        # return send_from_directory(directory, filename, as_attachment=True)
-        return redirect(url_for('recipes'))
-    else:
-        #recipes = db.session.query(Recipe).all()
-        return render_template('recipes2.html', results = Recipe.query.all())
-
-@application.route('/deleterecipe/<int:idd>', methods=["GET", "POST"])
-def deleterecipe(idd):
-    itemToDelete = db.session.query(Recipe).filter_by(id=idd).one()
-    if request.method == 'POST':
-        db.session.delete(itemToDelete)
-        db.session.commit()
-        return render_template('deleterecipe.html', name=itemToDelete.name)
-    else:
-        return render_template('deleterecipe.html', name=itemToDelete.name)
-
-
-@application.route('/work', methods=["GET", "POST"])
-def work():
-    if request.method == "POST":
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # if user does not select file, browser also
-        # submit a empty part without filename
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            #filename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(os.path.join(application.config['UPLOAD_FOLDER'], filename))
-            #return redirect(url_for('uploaded_file',filename=filename))
-            name = str(request.form["name"])
-            descr = str(request.form["descr"])
-            project = Project(name=name, description=descr, filename = 'fotos/'+filename)
-            db.session.add(project)
-            db.session.commit()
-            db.session.close()
-        # return send_from_directory(directory, filename, as_attachment=True)
-        return redirect(url_for('work'))
-    else:
-        #recipes = db.session.query(Recipe).all()
-        return render_template('work.html', results = Project.query.all())
-
-@application.route('/showwork/<int:idd>', methods=["GET"])
-def showwork(idd):
-    item = db.session.query(Project).filter_by(id=idd).one()
-    return send_from_directory(UPLOAD_FOLDER, item.filename, as_attachment=True)
-
-@application.route('/deletework/<int:idd>', methods=["GET", "POST"])
-def deletework(idd):
-    itemToDelete = db.session.query(Project).filter_by(id=idd).one()
-    if request.method == 'POST':
-        db.session.delete(itemToDelete)
-        db.session.commit()
-        return render_template('deleterecipe.html', name=itemToDelete.name)
-    else:
-        return render_template('deleterecipe.html', name=itemToDelete.name)
-
-@application.route('/interactive', methods=["GET", "POST"])
-def interactive():
-    return render_template('interactive.html')
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 if __name__ == '__main__':
     application.debug = True

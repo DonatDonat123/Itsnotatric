@@ -1,5 +1,5 @@
 var me = {};
-me.avatar = "./static/fotos/dd_profile.png";
+me.avatar = "./static/fotos/piece.jpg";
 
 var bot = {};
 bot.avatar = "./static/fotos/alien.jpg";
@@ -57,8 +57,14 @@ function insertChat(text, user){
 var socket = io.connect('http://' + document.domain + ':' + location.port);
 
 socket.on( 'connect', function() {
-  socket.send( 'connected')
+  socket.send('connected')
   room = 'room0 '
+  var username = 'user'
+  socket.emit('myBotEvent', {
+    username: username,
+    message: "start",
+    room:room
+  })
  })
 
 var btn = $('#sendbutton').on('click', function(e){
@@ -89,7 +95,4 @@ socket.on('message', function(msg){
 
 })
 
-insertChat("Hi", 'user');
-insertChat("How are you ?", 'other');
-insertChat("How are you ?", 'user');
-insertChat("How are you ?", 'other');
+//insertChat("start", 'user');
