@@ -42,7 +42,10 @@
                 </div>
             </li>
             <li class="nav-item">
-                <a class="nav-link disabled" href="#">Fotoalbum</a>
+                <a class="nav-link disabled" href="{{url_for('fotoalbum')}}">Fotoalbum</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" href="{{url_for('editfotoalbum')}}">add Fotos</a>
             </li>
         </ul>
 
@@ -80,9 +83,6 @@
     </div>
 </div>
 
-</div><!-- /.container -->
-
-
 <div class="container">
 
 
@@ -90,7 +90,7 @@
         <form action="{{url_for('editwork')}}" method="POST" enctype=multipart/form-data>
             <textarea name="name" placeholder="Title" class="form-control"></textarea>
             <textarea name="descr" placeholder="Description" class="form-control"></textarea>
-            <input type=file name=file>
+            <input type=file name=file multiple>
             <input type="submit" value="Add new Project">
         </form>
     </div>

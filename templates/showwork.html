@@ -17,7 +17,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light" style="padding:0px">
     <a class="navbar-brand" href="{{url_for('index')}}" style="padding:0px">
-        <img src="{{url_for('static', filename='fotos/flying_high_square.jpg')}}" height="55px" alt="flying-high">
+        <img src="./static/fotos/flying_high_square.jpg" height="55px" alt="">
         Deep Travelling
     </a>
 
@@ -43,7 +43,10 @@
                 </div>
             </li>
             <li class="nav-item">
-                <a class="nav-link disabled" href="#">Fotoalbum</a>
+                <a class="nav-link disabled" href="{{url_for('fotoalbum')}}">Fotoalbum</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" href="{{url_for('editfotoalbum')}}">add Fotos</a>
             </li>
         </ul>
 

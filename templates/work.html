@@ -36,37 +36,41 @@
                     CV
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="#">Lebenslauf</a>
+                    <a class="dropdown-item" href="{{url_for('lebenslauf')}}">Lebenslauf</a>
                     <a class="dropdown-item" href="#">Papers</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="{{url_for('work')}}">Projects</a>
                 </div>
             </li>
             <li class="nav-item">
-                <a class="nav-link disabled" href="#">Fotoalbum</a>
+                <a class="nav-link disabled" href="{{url_for('fotoalbum')}}">Fotoalbum</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" href="{{url_for('editfotoalbum')}}">add Fotos</a>
+            </li>
+
         </ul>
 
     </div>
 </nav>
 
 <div class="container-fluid">
-    <div class="row" style="text-align: center; font-size: 2em; height: 2em; margin-top:1em">
+    <div class="row" style="text-align: center; font-size: 2em; margin-top:1em">
         <div class="col-12">
-            <div style="margin-top: 1em"> Below you can find past projects of mine </div>
+            <div style="margin-top: 1em; margin-bottom: 1em"> Below you can find past projects of mine </div>
         </div>
     </div>
 
-    <div class="row" style="margin-top: 4em">
-        <div class="col-1"></div>
-        <div class="col-3">Project Name </div>
+    <div class="row" style="margin-top: 1em">
+        <div class="col-lg-1 col-0"></div>
+        <div class="col-lg-3 col-4">Project Name </div>
         <div class="col-6"> <b>Description</b> </div>
     </div>
     {% for result in results %}
     <div class="row">
-        <div class="col-1"></div>
-        <div class="col-3"><a href="{{url_for('showwork', idd = result.id)}}"> {{result.name}} </a> </div>
-        <div class="col-6"> {{result.description}} </div>
+        <div class="col-lg-1 col-0"></div>
+        <div class="col-lg-3 col-4"><a href="{{url_for('showwork', idd = result.id)}}"> {{result.name}} </a> </div>
+        <div class="col-lg-6 col-8"> {{result.description}} </div>
     </div>
     {% endfor %}
 </div>

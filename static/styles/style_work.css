@@ -5,3 +5,7 @@ html, body{
 .row{
     margin-top: 2em;
 }
+
+.container-fluid{
+    margin-bottom: 10em
+}

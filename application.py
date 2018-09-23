@@ -41,6 +41,12 @@ class UserChat(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user = db.Column(String(128)) #bot or user
     message = db.Column(String(1028))
+
+class Fotos(db.Model):
+    __tablename__ = "fotoalbum"
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(String(128))
+    filepath = db.Column(String(256))
    
 #    last_updated = db.Column(DateTime, onupdate=datetime.datetime.now)
 # RUN OUTSIDE OF THE SCRIPT:
@@ -99,6 +105,25 @@ def editwork():
 def lebenslauf():
     return render_template('lebenslauf.html')
 
+@application.route('/fotoalbum', methods=["GET", "POST"])
+def fotoalbum():
+    return render_template('fotoalbum.html', fotos = Fotos.query.all())
+
+
+@application.route('/editfotoalbum', methods=["GET", "POST"])
+def editfotoalbum():
+    if request.method == "POST":
+        mydata = request.files.getlist("file")
+        for file in mydata:
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(application.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            foto = Fotos(filename=filename, filepath = filepath)
+            db.session.add(foto)
+            db.session.commit()
+            db.session.close()
+
+    return render_template('editfotoalbum.html', fotos = Fotos.query.all())
 
 @application.route('/work', methods=["GET"])
 def work():
