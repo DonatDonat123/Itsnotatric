@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>FOTOALBUM</title>
+<style type="text/css">
+<!--
+html,body{height:100%}
+body {margin:0; padding:0; background:#333 url(./static/fotos/sw_page_bg.png); font-family:Helvetica, Arial, sans-serif; font-size:16px;}
+/* custom fonts */
+@font-face {
+	font-family: 'eurof55-webfont';
+	src: url('fonts/eurof55-webfont.eot');
+	src: local('☺'), url('fonts/eurof55-webfont.woff') format('woff'), url('fonts/eurof55-webfont.ttf') format('truetype'), url('fonts/eurof55-webfont.svg#webfont8xigBfG2') format('svg');
+}
+@font-face {
+	font-family: 'eurof35-webfont';
+	src: url('fonts/eurof35-webfont.eot');
+	src: local('☺'), url('fonts/eurof35-webfont.woff') format('woff'), url('fonts/eurof35-webfont.ttf') format('truetype'), url('fonts/eurof35-webfont.svg#webfont8xigBfG2') format('svg');
+}
+@font-face {
+	font-family: 'graublauweb-webfont';
+	src: url('fonts/graublauweb-webfont.eot');
+	src: local('☺'), url('fonts/graublauweb-webfont.woff') format('woff'), url('fonts/graublauweb-webfont.ttf') format('truetype'), url('fonts/graublauweb-webfont.svg#webfont8xigBfG2') format('svg');
+}
+.clear{clear:both;}
+a:link,a:visited,a:hover{color:#ddd;}
+a:hover{color:#fff; text-decoration:none;}
+#bg{position:fixed; left:585px; top:0; width:100%; height:100%;}
+#bgimg{display:none; cursor:pointer; -ms-interpolation-mode: bicubic;} /* special IE fix for resized images */
+#preloader{position:absolute; z-index:2; width:140px; padding:20px; top:20px; left:50px; background:#000; color:#666; font-family:graublauweb-webfont, Helvetica, Arial, sans-serif; font-size:16px; -moz-border-radius:5px; -khtml-border-radius:5px; -webkit-border-radius:5px; border-radius:5px;}
+#preloader img{margin-right:20px;}
+#toolbar{display:inline-block; padding:4px 15px; margin:20px 15px; background:#262626 url(./static/fotos/sw_btn_bg.png) repeat-x; -moz-border-radius:8px; -khtml-border-radius:8px; -webkit-border-radius:8px; border-radius:8px; font-family:graublauweb-webfont, Helvetica, Arial, sans-serif; font-size:12px; color:#fff; cursor:pointer;}
+#outer_container{position:relative; margin:0; width:700px; padding:0; z-index:2; background:url(./static/fotos/empty.gif);} /* fucking IE needs a background value to understand hover area */
+#customScrollBox{position:relative; background:url(./static/fotos/sw_l_bg.png) repeat-y;}
+#customScrollBox .container{position:relative; width:585px; top:0; float:left;}
+#customScrollBox .content{clear:both;}
+#customScrollBox .content h1{padding:5px; margin:10px; color:#fff; font-family:eurof55-webfont, Helvetica, Arial, sans-serif; font-size:48px;}
+#customScrollBox .content h2{padding:5px; margin:10px 10px 0 10px; color:#fff; font-family:eurof35-webfont, Helvetica, Arial, sans-serif; font-size:24px;}
+#customScrollBox .content p{padding:5px; margin:0 10px 10px 10px; color:#ddd; font-family:graublauweb-webfont, Helvetica, Arial, sans-serif; line-height:26px;}
+.light{font-family:eurof35-webfont, Helvetica, Arial, sans-serif;}
+.grey{color:#999;}
+.lightgrey{color:#ddd;}
+.s36{font-size:36px;}
+.s24{font-size:24px;}
+#customScrollBox a.thumb_link{position:relative; margin:0 0 1px 1px; display:block; float:left;}
+#customScrollBox img{border:none;}
+#customScrollBox a.thumb_link .selected{position:absolute; top:0; left:0; width:145px; height:91px; background:url(./static/fotos/sw_thumb_selected.png) no-repeat; display:none;}
+#arrow_indicator{position:absolute; cursor:pointer; width:50px; padding:10px; top:50%; margin-top:-25px; left:20px; background:url(./static/fotos/sw_transparent_black_bg.png); -moz-border-radius:5px; -khtml-border-radius:5px; -webkit-border-radius:5px; border-radius:5px; display:none;}
+#nextimage_tip{position:fixed; z-index:1; padding:0 20px; line-height:40px; color:#fff; height:40px; top:50%; margin-top:-20px; right:20px; background:url(sw_transparent_black_bg.png); -moz-border-radius:5px; -khtml-border-radius:5px; -webkit-border-radius:5px; border-radius:5px; display:none; font-family:graublauweb-webfont, Helvetica, Arial, sans-serif;}
+.with_border{border:1px solid #000;}
+.with_shadow{-moz-box-shadow:0 0 40px #000; -webkit-box-shadow:0 0 40px #000; box-shadow:0 0 40px #000;}
+-->
+</style>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+<script src="{{url_for('static', filename='javascript/jquery.easing.1.3.js')}}" type="text/javascript"></script>
+<script src="{{url_for('static', filename='javascript/jquery.mousewheel.min.js')}}" type="text/javascript"></script>
+</head>
+
+<body>
+<div id="outer_container">
+<div id="customScrollBox">
+	<div class="container">
+    	<div class="content">
+        	<h1>FOTO<span class="lightgrey">ALBUM</span> <br /><span class="light"><span class="grey"><span class="s36">BECAUSE STYLE MATTERS</span></span></span></h1>
+            <p>A simple, yet elegant fullscreen image gallery created with the jQuery framework and some simple CSS</p>
+            <div id="toolbar"></div><div class="clear"></div>
+             {% for foto in fotos %}
+            <a href={{foto.filepath}} class="thumb_link"><span class="selected"></span><img src={{foto.filepath}} title={{foto.filename}} alt={{foto.filename}} class="thumb" width="120px" height="auto" /></a>
+            {% endfor %}
+            <p class="clear"></p>
+        </div>
+	</div>
+</div>
+</div>
+<div id="bg">
+    <img src="./static/fotos/flying_high_square.jpg" title="Flying high" id="bgimg" />
+	<div id="preloader"><img src="./static/fotos/ajax-loader_dark.gif" width="32" height="32" align="absmiddle" />LOADING...</div>
+    <div id="arrow_indicator" title="Open images thumbnails"><img src="./static/fotos/sw_arrow_indicator.png" width="50" height="50" alt="Open images thumbnails" /></div>
+    <div id="nextimage_tip">Click for next image</div>
+</div>
+<script src="{{url_for('static', filename='javascript/fotoalbum_hyper.js')}}" type="text/javascript"></script>
+</body>
+</html>
